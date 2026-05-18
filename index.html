@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="ja" class="lang-ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Talent Data Engineering</title>
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --accent: #38bdf8;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --modal-bg: rgba(15, 23, 42, 0.85);
+            --gradient-blend: linear-gradient(135deg, rgba(56, 189, 248, 0.04) 0%, rgba(20, 184, 166, 0.04) 100%);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans JP", sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 100px;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding-top: 80px;
+        }
+
+        /* Fixed Language Toggle Utility Mechanics (Fixes the white screen bug) */
+        html.lang-ja [lang="en"] { display: none !important; }
+        html.lang-ja [lang="ja"] { display: block; }
+        html:not(.lang-ja) [lang="ja"] { display: none !important; }
+        html:not(.lang-ja) [lang="en"] { display: block; }
+        
+        /* Inline span rules for multi-language navigation layout */
+        html.lang-ja span[lang="ja"], html.lang-ja id[lang="ja"] { display: inline !important; }
+        html:not(.lang-ja) span[lang="en"], html:not(.lang-ja) id[lang="en"] { display: inline !important; }
+
+        /* Header & Nav */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+        }
+
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--accent);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 1.25rem;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+            flex-wrap: wrap;           /* Allow items to go to next line */
+            justify-content: flex-end; /* Align items to the right */
+        }
+
+       
+
+        nav a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        nav a:hover { color: var(--accent); }
+
+        .btn-cta {
+            background: var(--accent);
+            color: var(--bg-primary);
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+        }
+
+        .lang-switch {
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 0.25rem 0.5rem;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        /* Hero Section */
+        .hero {
+            max-width: 800px;
+            margin: 4rem auto;
+            text-align: center;
+            padding: 0 2rem;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.3;
+        }
+
+        .hero p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* Tech Stack Section */
+        .badges-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            text-align: center;
+            scroll-margin-top: 15vh;
+        }
+
+        .badges-grid {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .badge {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: inline-block;
+        }
+
+        /* Main Content Container Section */
+        .main-pipeline-section {
+            scroll-margin-top: 15vh;
+            max-width: 1200px;
+            margin: 5rem auto;
+            padding: 0 2rem;
+            
+        }
+
+        .horizontal-grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: stretch;
+        }
+
+        .card {
+            background: var(--bg-secondary);
+            background-image: var(--gradient-blend);
+            border: 1px solid var(--border);
+            padding: 2.5rem;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .card h2 {
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+            font-size: 1.75rem;
+        }
+
+        .card h3 {
+            margin-top: 1.5rem;
+            font-size: 1.1rem;
+            color: var(--text-main);
+        }
+
+        .card p {
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        /* Sliding Form Container Component */
+        .form-section {
+            scroll-margin-top: 15vh;
+            max-width: 600px;
+            margin: 6rem auto;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 2.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-toggle {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2rem;
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 1rem;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            z-index: 2;
+        }
+
+        .tab-btn.active {
+            color: var(--accent);
+            border-bottom: 2px solid var(--accent);
+        }
+
+        /* Sliding Area Container Mechanics */
+        .form-slider-window {
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .form-slider-track {
+            display: flex;
+            width: 200%;
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .form-container {
+            width: 50%;
+            padding: 0 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            border-radius: 4px;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            cursor: pointer;
+        }
+
+        input[type="radio"] { width: auto; }
+
+        .submit-btn {
+            width: 100%;
+            background: var(--accent);
+            color: var(--bg-primary);
+            padding: 1rem;
+            border: none;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        .submit-btn:disabled {
+            background: var(--border);
+            color: var(--text-muted);
+            cursor: not-allowed;
+        }
+
+        /* Review Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--modal-bg);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            padding: 2.5rem;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-card h3 {
+            margin-bottom: 1.5rem;
+            color: var(--accent);
+            font-size: 1.5rem;
+        }
+
+        .review-item {
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        .review-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .review-value {
+            font-weight: 600;
+            margin-top: 0.25rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 0.75rem;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-back {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .btn-confirm {
+            background: var(--accent);
+            color: var(--bg-primary);
+        }
+
+/* 
+
+        @media (max-width: 768px) {
+            .horizontal-grid-layout { grid-template-columns: 1fr; }
+            nav ul { display: none; }
+        }
+
+*/
+ 
+@media (max-width: 480px) {
+    .nav-container {
+        gap: 10px;
+    }
+    .horizontal-grid-layout { grid-template-columns: 1fr; }
+    nav ul {
+        justify-content: center;     /* centers the menu items */
+        width: 100%;                 /* takes full width */
+        margin-top: 10px;
+        gap: 12px;
+    }
+    
+    nav ul li a {
+        font-size: 0.95rem;
+        padding: 6px 10px;
+    }
+}
+
+/* 1. Natively offset the browser's scroll anchoring for the inner links */
+#candidate-pipeline,
+#enterprise-systems {
+  scroll-margin-top: 90px !important;
+}
+
+/* 2. Target the main parent container if the browser reads the wrapper boundaries */
+.horizontal-grid-layout, 
+section.horizontal-grid-layout {
+  scroll-margin-top: 100px !important;
+}
+
+/* 3. Forces smooth scroll behavior universally on the root frame */
+html {
+  scroll-behavior: smooth !important;
+}
+
+
+    </style>
+</head>
+<body>
+
+    <!-- 1. Header & Navigation -->
+    <header>
+        <div class="nav-container">
+            <div class="logo">X-Engineers</div>
+            <nav>
+                <ul>
+                    <li><a href="#"><span lang="en">Home</span><span lang="ja">ホーム</span></a></li>
+                    <li><a href="#candidates-block"><span lang="en">Candidates</span><span lang="ja">候補者</span></a></li>
+                    <li><a href="#enterprise-block"><span lang="en">Enterprise</span><span lang="ja">企業</span></a></li>
+                    <li><a href="#tech-stack-block"><span lang="en">Tech Stack</span><span lang="ja">技術スタック</span></a></li>
+                    <li><a href="#interactive-form-section" id="navContact"><span lang="en">Contact</span><span lang="ja">お問い合わせ</span></a></li>
+                    <li><button class="btn-cta" id="navJoinUs"><span lang="en">Join Us</span><span lang="ja">採用情報</span></button></li>
+                    <li><button class="btn-cta" id="navHireUs"><span lang="en">Hire Us</span><span lang="ja">企業のお客様</span></button></li>
+                    <li><button class="lang-switch" id="langToggle">EN</button></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- 2. Main Catchphrases -->
+    <section class="hero">
+        <h1>
+            <span lang="en">From Zero to CTO. Domain-Driven Data Engineering for Japan's Core Industries.</span>
+            <span lang="ja"><br>ゼロからCTOへ。日本の基幹産業のためのドメイン駆動型データエンジニアリング。</span>
+        </h1>
+        <p>
+            <span lang="en">We bridge the gap between global talent and Japanese enterprises through domain-specific Data Engineering, advanced Xops, and intensive language training.</span>
+            <span lang="ja">当社は、専門分野に特化したデータエンジニアリング、高度なXOps、そして集中的な語学研修を通じて、グローバルな人材と日本企業との間のギャップを埋めます。</span>
+        </p>
+    </section>
+
+    <!-- 3. Tech Stack Section -->
+    <section class="badges-container" id="tech-stack-block">
+        <h2><span lang="en">Tech Stack: Target Industries</span><span lang="ja">技術スタック：対象業界戦略</span></h2>
+        <div class="badges-grid">
+            <div class="badge"><span lang="en">Finance</span><span lang="ja">財務</span></div>
+            <div class="badge"><span lang="en">E-Commerce</span><span lang="ja">Eコマース</span></div>
+            <div class="badge"><span lang="en">Manufacturing</span><span lang="ja">製造業</span></div>
+            <div class="badge"><span lang="en">Healthcare</span><span lang="ja">ヘルスケア</span></div>
+        </div>
+    </section>
+
+    <!-- 4 & 5. Combined Horizontal Pipeline Section -->
+    <!-- Add this between your sections -->
+
+    <section class="main-pipeline-section">
+        
+        <div class="horizontal-grid-layout">
+            
+            <!-- Left Card: Candidate Pipeline -->
+            <div class="card" id="candidates-block"><div></div>
+                <h2><span lang="en">Candidate Pipeline</span><span lang="ja">候補者パイプライン</span></h2>
+                <h3><span lang="en">The Ikigai Promise</span><span lang="ja">生きがいの約束</span></h3>
+                <p>
+                    <span lang="en">3–5 year roadmap from non-technical (But Sophisticated)/JLPT N2 to Full-Stack SE, PM, or CTO.</span>
+                    <span lang="ja">非技術職/日本語能力試験N2レベルからフルスタックSE、PM、またはCTOへの3～5年間のロードマップ。</span>
+                </p>
+                
+                <h3><span lang="en">Bootcamp Metric</span><span lang="ja">ブートキャンプ指標</span> / <span lang="en">Japanese Language Training</span><span lang="ja">日本語語学研修</span></h3>
+                <p>
+                    <span lang="en">4 months | 700–800 hours intensive AWS cloud-readiness training.</span>
+                    <span lang="ja">4ヶ月 | 700～800時間の集中的なAWSクラウド対応トレーニング。</span>
+                </p>
+
+                <h3><span lang="en">Remote Setup</span><span lang="ja">リモートセットアップ</span></h3>
+                <p>
+                    <span lang="en">Speed internet infrastructure, ergonomic allowance, and cloud-entry cards.</span>
+                    <span lang="ja">高速インターネットインフラ、ホームテクセットアップ、法人用クラウド決済カード。</span>
+                </p>
+            </div>
+
+            <!-- Right Card: Enterprise Systems -->
+            <div class="card" id="enterprise-block">
+                <h2><span lang="en">Enterprise Systems</span><span lang="ja">企業システム</span></h2>
+                <h3><span lang="en">Architecture First</span><span lang="ja">アーキテクチャーファースト</span></h3>
+                <p>
+                    <span lang="en">Heavy domain data engineering (Pipelines, TLS, RAG, Agentic AI) prior to AI/ML deployment.</span>
+                    <span lang="ja">AI/ML導入の基盤となる、高度なドメインデータエンジニアリング（パイプライン、TLS、RAG、エージェントAI）を提供。</span>
+                </p>
+
+                <h3><span lang="en">Multi-Cloud Grid & Virtual Office Core</span><span lang="ja">マルチクラウドグリッド ＆ 仮想オフィスコア</span></h3>
+                <p>
+                    <span lang="en">Native pipeline integration with SAP, ERP, CRM, XaaS, and Demand Forecasting.</span>
+                    <span lang="ja">SAP、ERP、CRM、XaaS、および需要予測とのネイティブパイプライン統合。</span>
+                </p>
+
+                <h3><span lang="en">Operational Strategy & Delivery Frameworks</span><span lang="ja">作戦戦略 ＆ 提供フレームワーク</span></h3>
+                <p>
+                    <span lang="en">Production-ready workloads managed transparently via elite tools.</span>
+                    <span lang="ja">高度なツールによって透過的に管理される、本番環境に対応したワークロード。</span>
+                </p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- 7. Interactive Sliding Form Section -->
+    <section class="form-section" id="interactive-form-section">
+        <div class="form-toggle">
+            <button class="tab-btn active" id="tabCandidate" onclick="switchForm('candidate')">
+                <span lang="en">Candidate Entry</span><span lang="ja">候補者エントリー</span>
+            </button>
+            <button class="tab-btn" id="tabEnterprise" onclick="switchForm('enterprise')">
+                <span lang="en">Hire Talent</span><span lang="ja">人材採用</span>
+            </button>
+        </div>
+
+        <div class="form-slider-window">
+            <div class="form-slider-track" id="formTrack">
+                
+                <!-- Candidate Form -->
+                <div class="form-container">
+                    <form id="candidateActualForm" onsubmit="openReviewModal(event, 'candidate')">
+                        <div class="form-group">
+                            <label><span lang="en">Full Name</span><span lang="ja">フルネーム</span></label>
+                            <input type="text" id="candName" required>
+                        </div>
+                        <div class="form-group">
+                            <label><span lang="en">Email Address</span><span lang="ja">メールアドレス</span></label>
+                            <input type="email" id="candEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label><span lang="en">Phone Number & Messaging Accounts</span><span lang="ja">電話番号 ＆ メッセンジャーアカウント</span></label>
+                            <input type="text" id="candPhone" placeholder="国内は電話番号だけで大丈夫です/Whatsapp ID/Line ID/+,Code,PhoneNumber" required>
+                        </div>
+                        <div class="form-group">
+                            <label><span lang="en">JLPT Level</span><span lang="ja">日本語能力試験レベル</span></label>
+                            <select id="candJlpt">
+                                <option value="N1">N1</option>
+                                <option value="N2">N2</option>
+                                <option value="N3">N3</option>
+                                <option value="None">None / なし</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label><span lang="en">AWS Knowledge</span><span lang="ja">AWSの知識 / 経験</span></label>
+                            <div class="radio-group">
+                                <label><input type="radio" name="candAws" value="Yes" checked> <span lang="en">Yes</span><span lang="ja">はい</span></label>
+                                <label><input type="radio" name="candAws" value="No"> <span lang="en">No</span><span lang="ja">いいえ</span></label>
+                            </div>
+                        </div>
+                        <!--
+                        Context-Driven Fields for Candidate Track
+                        <div class="form-group">
+                            <label>
+                                <span lang="en">Resume Upload (Optional)</span>
+                                <span lang="ja">履歴書のアップロード (任意)</span>
+                            </label>
+                            <input type="file" id="candFile">
+                        </div>
+                        
+                         
+                        -->       
+                        <div class="form-group">
+                            <label>
+                                <span lang="ja">GitHub プロフィール URL</span>
+                                <span lang="en">GitHub Profile URL</span>
+                            </label>
+                            <input type="url" id="githubUrl" placeholder="https://github.com/username" required>
+                        </div>
+                        <button type="submit" class="submit-btn" id="candSubmitBtn">
+                            <span lang="en">SUBMIT APPLICATION</span><span lang="ja">送信する</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Enterprise Form -->
+                <div class="form-container">
+                    <form id="enterpriseActualForm" onsubmit="openReviewModal(event, 'enterprise')">
+                        <div class="form-group">
+                            <label><span lang="en">Company Name</span><span lang="ja">会社名</span></label>
+                            <input type="text" id="entCompany" required>
+                        </div>
+                        <div class="form-group">
+                            <label><span lang="en">Email Address</span><span lang="ja">メールアドレス</span
+                            </span></label>
+                            <input type="email" id="entEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label><span lang="en">Corporate Phone Number & Contact Accounts</span><span lang="ja">担当者電話番号 ＆ 連絡用アカウント</span></label>
+                            <input type="text" id="entPhone" placeholder="国内は電話番号だけで大丈夫です/Whatsapp ID/Line ID/+,Code,PhoneNumber" required>
+                        </div>
+                        <div class="form-group">
+                            <label><span lang="en">Target Sector</span><span lang="ja">対象セクター</span></label>
+                            <input type="text" id="entSector" required>
+                        </div>
+                        <div class="form-group">
+                            <label><span lang="en">Project Need</span><span lang="ja">ご相談内容 / プロジェクト要件</span></label>
+                            <input type="text" id="entProject" required>
+                        </div>
+                        <button type="submit" class="submit-btn" id="entSubmitBtn">
+                            <span lang="en">ENTERPRISE CONSULTATION</span><span lang="ja">企業コンサルティングを依頼する</span>
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Review Modal Frame Overlay -->
+    <div class="modal-overlay" id="reviewModal">
+        <div class="modal-card">
+            <h3><span lang="en">Confirm Entry Records</span><span lang="ja">入力内容の確認</span></h3>
+            <div id="modalTargetContent"></div>
+            <div class="modal-actions">
+                <button class="modal-btn btn-back" onclick="closeReviewModal()"><span lang="en">Back to Edit</span><span lang="ja">修正する</span></button>
+                <button class="modal-btn btn-confirm" id="modalConfirmBtn" onclick="commitFinalRegistration()"><span lang="en">Confirm & Send</span><span lang="ja">確定して送信</span></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- UI & Network Pipeline Engine -->
+    <script>
+        const langToggleBtn = document.getElementById('langToggle');
+        
+        langToggleBtn.addEventListener('click', () => {
+            const htmlEl = document.documentElement;
+            if (htmlEl.classList.contains('lang-ja')) {
+                htmlEl.classList.remove('lang-ja');
+                htmlEl.setAttribute('lang', 'en');
+                langToggleBtn.textContent = 'JA';
+            } else {
+                htmlEl.classList.add('lang-ja');
+                htmlEl.setAttribute('lang', 'ja');
+                langToggleBtn.textContent = 'EN';
+            }
+        });
+
+        function switchForm(type) {
+            const track = document.getElementById('formTrack');
+            const tabCandidate = document.getElementById('tabCandidate');
+            const tabEnterprise = document.getElementById('tabEnterprise');
+
+            if (type === 'candidate') {
+                track.style.transform = 'translateX(0%)';
+                tabCandidate.classList.add('active');
+                tabEnterprise.classList.remove('active');
+            } else {
+                track.style.transform = 'translateX(-50%)';
+                tabEnterprise.classList.add('active');
+                tabCandidate.classList.remove('active');
+            }
+        }
+
+        // Navigation Interceptors
+        document.getElementById('navContact').addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('interactive-form-section').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        document.getElementById('navJoinUs').addEventListener('click', () => {
+            document.getElementById('interactive-form-section').scrollIntoView({ behavior: 'smooth' });
+            switchForm('candidate');
+        });
+
+        document.getElementById('navHireUs').addEventListener('click', () => {
+            document.getElementById('interactive-form-section').scrollIntoView({ behavior: 'smooth' });
+            switchForm('enterprise');
+        });
+
+        let dynamicActiveType = 'candidate';
+        let payloadDataPacket = {};
+
+        function openReviewModal(event, type) {
+            event.preventDefault();
+            dynamicActiveType = type;
+            const container = document.getElementById('modalTargetContent');
+            container.innerHTML = '';
+            
+            let dataset = [];
+            const activeLanguageKey = document.documentElement.classList.contains('lang-ja') ? 'ja' : 'en';
+
+            if(type === 'candidate') {
+                payloadDataPacket = {
+                    fullName: document.getElementById('candName').value,
+                    email: document.getElementById('candEmail').value,
+                    phoneProfile: document.getElementById('candPhone').value,
+                    jlptLevel: document.getElementById('candJlpt').value,
+                    awsKnowledge: document.querySelector('input[name="candAws"]:checked').value,
+                    language: activeLanguageKey
+                };
+                dataset = [
+                    { labelEn: 'Full Name', val: payloadDataPacket.fullName },
+                    { labelEn: 'Email', val: payloadDataPacket.email },
+                    { labelEn: 'Communications Profile', val: payloadDataPacket.phoneProfile },
+                    { labelEn: 'JLPT Level', val: payloadDataPacket.jlptLevel },
+                    { labelEn: 'AWS Knowledge', val: payloadDataPacket.awsKnowledge }
+                ];
+            } else {
+                payloadDataPacket = {
+                    companyName: document.getElementById('entCompany').value,
+                    email: document.getElementById('entEmail').value,
+                    phoneProfile: document.getElementById('entPhone').value,
+                    targetSector: document.getElementById('entSector').value,
+                    projectNeed: document.getElementById('entProject').value,
+                    language: activeLanguageKey
+                };
+                dataset = [
+                    { labelEn: 'Company Name', val: payloadDataPacket.companyName },
+                    { labelEn: 'Email', val: payloadDataPacket.email },
+                    { labelEn: 'Communications Profile', val: payloadDataPacket.phoneProfile },
+                    { labelEn: 'Target Sector', val: payloadDataPacket.targetSector },
+                    { labelEn: 'Project Need', val: payloadDataPacket.projectNeed }
+                ];
+            }
+
+            dataset.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'review-item';
+                div.innerHTML = `
+                    <div class="review-label">${item.labelEn}</div>
+                    <div class="review-value">${item.val}</div>
+                `;
+                container.appendChild(div);
+            });
+
+            document.getElementById('reviewModal').classList.add('active');
+        }
+
+        function closeReviewModal() {
+            document.getElementById('reviewModal').classList.remove('active');
+        }
+
+        async function commitFinalRegistration() {
+            const confirmBtn = document.getElementById('modalConfirmBtn');
+            const isJa = document.documentElement.classList.contains('lang-ja');
+            
+            confirmBtn.disabled = true;
+            confirmBtn.textContent = isJa ? '送信中...' : 'Sending...';
+
+            const AWS_API_GATEWAY_URL = "https://gqns1d7wza.execute-api.us-east-1.amazonaws.com/prod/register";
+
+            try {
+                const response = await fetch(AWS_API_GATEWAY_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payloadDataPacket)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP network error encountered: ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                alert(isJa ? '送信が正常に完了しました。' : 'Payload successfully delivered to processing layers.');
+                
+                closeReviewModal();
+                if(dynamicActiveType === 'candidate') {
+                    document.getElementById('candidateActualForm').reset();
+                } else {
+                    document.getElementById('enterpriseActualForm').reset();
+                }
+
+            } catch (error) {
+                console.error("Critical delivery failure:", error);
+                alert(isJa ? 'エラーが発生しました。しばらく経ってから再度お試しください。' : 'Transmission pipeline interrupted. Check configuration contexts.');
+            } finally {
+                confirmBtn.disabled = false;
+                confirmBtn.textContent = isJa ? '確定して送信' : 'Confirm & Send';
+            }
+        }
+    </script>
+</body>
+</html>
