@@ -1,0 +1,433 @@
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --accent: #38bdf8;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --modal-bg: rgba(15, 23, 42, 0.85);
+            --gradient-blend: linear-gradient(135deg, rgba(56, 189, 248, 0.04) 0%, rgba(20, 184, 166, 0.04) 100%);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans JP", sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 100px;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            line-height: 1.6;
+            
+        }
+
+        /* Fixed Language Toggle Utility Mechanics (Fixes the white screen bug) */
+        html.lang-ja [lang="en"] { display: none !important; }
+        html.lang-ja [lang="ja"] { display: block; }
+        html:not(.lang-ja) [lang="ja"] { display: none !important; }
+        html:not(.lang-ja) [lang="en"] { display: block; }
+        
+        /* Inline span rules for multi-language navigation layout */
+        html.lang-ja span[lang="ja"], html.lang-ja id[lang="ja"] { display: inline !important; }
+        html:not(.lang-ja) span[lang="en"], html:not(.lang-ja) id[lang="en"] { display: inline !important; }
+
+        /* Header & Nav */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+        }
+
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--accent);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 1.25rem;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+            flex-wrap: wrap;           /* Allow items to go to next line */
+            justify-content: flex-end; /* Align items to the right */
+        }
+
+       
+
+        nav a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        nav a:hover { color: var(--accent); }
+
+        .btn-cta {
+            background: var(--accent);
+            color: var(--bg-primary);
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+        }
+
+        .lang-switch {
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 0.25rem 0.5rem;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        /* Hero Section */
+        .hero {
+            max-width: 800px;
+            margin: 8rem auto 4rem auto;
+            text-align: center;
+            padding: 0 2rem;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.3;
+        }
+
+        .hero p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* Tech Stack Section */
+        .badges-container {
+            max-width: 1200px;
+            margin: 8rem auto 4rem auto; /* 8rem top, auto right, 4rem bottom, auto left */
+            padding: 0 2rem;
+            text-align: center;
+            scroll-margin-top: 5vh;
+        }
+
+        .badges-grid {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .badge {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: inline-block;
+        }
+
+        /* Main Content Container Section */
+        .main-pipeline-section {
+            scroll-margin-top: 15vh;
+            max-width: 1200px;
+            padding: 0 2rem;
+            
+        }
+
+        .horizontal-grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: stretch;
+        }
+
+        .card {
+            background: var(--bg-secondary);
+            background-image: var(--gradient-blend);
+            border: 1px solid var(--border);
+            padding: 2.5rem;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .card h2 {
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+            font-size: 1.75rem;
+        }
+
+        .card h3 {
+            margin-top: 1.5rem;
+            font-size: 1.1rem;
+            color: var(--text-main);
+        }
+
+        .card p {
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        /* Sliding Form Container Component */
+        .form-section {
+            scroll-margin-top: 15vh;
+            max-width: 600px;
+            margin: 8rem auto 4rem auto;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 2.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-toggle {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2rem;
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 1rem;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            z-index: 2;
+        }
+
+        .tab-btn.active {
+            color: var(--accent);
+            border-bottom: 2px solid var(--accent);
+        }
+
+        /* Sliding Area Container Mechanics */
+        .form-slider-window {
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .form-slider-track {
+            display: flex;
+            width: 200%;
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .form-container {
+            width: 50%;
+            padding: 0 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            border-radius: 4px;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            cursor: pointer;
+        }
+
+        input[type="radio"] { width: auto; }
+
+        .submit-btn {
+            width: 100%;
+            background: var(--accent);
+            color: var(--bg-primary);
+            padding: 1rem;
+            border: none;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        .submit-btn:disabled {
+            background: var(--border);
+            color: var(--text-muted);
+            cursor: not-allowed;
+        }
+
+        /* Review Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--modal-bg);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            padding: 2.5rem;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-card h3 {
+            margin-bottom: 1.5rem;
+            color: var(--accent);
+            font-size: 1.5rem;
+        }
+
+        .review-item {
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        .review-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .review-value {
+            font-weight: 600;
+            margin-top: 0.25rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 0.75rem;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-back {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .btn-confirm {
+            background: var(--accent);
+            color: var(--bg-primary);
+        }
+
+/* 
+
+        @media (max-width: 768px) {
+            .horizontal-grid-layout { grid-template-columns: 1fr; }
+            nav ul { display: none; }
+        }
+
+*/
+ 
+@media (max-width: 480px) {
+    .nav-container {
+        gap: 10px;
+    }
+    .horizontal-grid-layout { grid-template-columns: 1fr; }
+    nav ul {
+        justify-content: center;     /* centers the menu items */
+        width: 100%;                 /* takes full width */
+        margin-top: 10px;
+        gap: 12px;
+    }
+    
+    nav ul li a {
+        font-size: 0.95rem;
+        padding: 6px 10px;
+    }
+}
+
+/* 1. Natively offset the browser's scroll anchoring for the inner links */
+#candidate-pipeline,
+#enterprise-systems {
+  scroll-margin-top: 90px !important;
+}
+
+/* 2. Target the main parent container if the browser reads the wrapper boundaries */
+.horizontal-grid-layout, 
+section.horizontal-grid-layout {
+  scroll-margin-top: 100px !important;
+}
+
+/* 3. Forces smooth scroll behavior universally on the root frame */
+html {
+  scroll-behavior: smooth !important;
+}
