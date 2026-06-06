@@ -1,227 +1,347 @@
 <!DOCTYPE html>
-<html lang="ja" class="lang-ja">
+<html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Global Talent Data Engineering</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="script.js" defer></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IT Blog - Dynamic Grid Layout</title>
+  
+  <!-- Tailwind Play CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Marked.js -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <!-- Highlight.js -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- 1. Header & Navigation -->
-    <header>
-        <div class="nav-container">
-            <div class="logo">X-Engineers</div>
-            <nav>
-                <ul>
-                    <li><a href="#"><span lang="en">Home</span><span lang="ja">ホーム</span></a></li>
-                    <li><a href="#candidates-block"><span lang="en">Candidates</span><span lang="ja">候補者</span></a></li>
-                    <li><a href="#enterprise-block"><span lang="en">Enterprise</span><span lang="ja">企業</span></a></li>
-                    <li><a href="#tech-stack-block"><span lang="en">Tech Stack</span><span lang="ja">技術スタック</span></a></li>
-                    <li><a href="#interactive-form-section" id="navContact"><span lang="en">Contact</span><span lang="ja">お問い合わせ</span></a></li>
-                    <li><button class="btn-cta" id="navJoinUs"><span lang="en">Join Us</span><span lang="ja">採用情報</span></button></li>
-                    <li><button class="btn-cta" id="navHireUs"><span lang="en">Hire Us</span><span lang="ja">企業のお客様</span></button></li>
-                    <li><button class="lang-switch" id="langToggle">EN</button></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+  <!-- Header Navigation Area -->
+  <header class="blog-header">
+    <div class="logo">X-Engineers</div>
+    
+    <!-- Central Navigation Links
+    <nav class="main-nav">
+      <a href="#home" class="nav-item active">ホーム</a>
+      <a href="#candidates" class="nav-item">候補者</a>
+      <a href="#companies" class="nav-item">企業</a>
+      <a href="#tech-stack" class="nav-item">技術スタック</a>
+      <a href="#contact" class="nav-item">お問い合わせ</a>
+    </nav> 
+    -->
+    
+    <!-- Language Selector Button (JA / EN Formatted) -->
+    <div class="lang-switcher">
+      <button class="lang-btn active" data-lang="ja">JA</button>
+      <span class="lang-divider">/</span>
+      <button class="lang-btn" data-lang="en">EN</button>
+    </div>
+  </header>
 
-    <!-- 2. Main Catchphrases -->
-    <section class="hero">
-        <h1>
-            <span lang="en">From Zero to CTO. Domain-Driven Data Engineering for Japan's Core Industries.</span>
-            <span lang="ja">ゼロからCTOへ。日本の基幹産業のためのドメイン駆動型データエンジニアリング。</span>
-        </h1>
-        <p>
-            <span lang="en">We bridge the gap between global talent and Japanese enterprises through domain-specific Data Engineering, advanced Xops, and intensive language training.</span>
-            <span lang="ja">当社は、専門分野に特化したデータエンジニアリング、高度なXOps、そして集中的な語学研修を通じて、グローバルな人材と日本企業との間のギャップを埋めます。</span>
-        </p>
+  <!-- Main Content Wrapper -->
+  <main class="content-wrapper">
+
+    <!-- HERO SECTION (Directly under the menu bar) -->
+    <section class="hero-section">
+      <h1 class="hero-title">「AWS × PMO × 運用設計 × 業務知識」</h1>
+      
+      <!-- Japanese Hero Subtext (Default visible) -->
+      <p id="hero-desc-ja" class="hero-description lang-toggle-text">
+        当社は、専門分野に特化したデータエンジニアリング、高度なXOps、そして集中的な語学研修を通じて、グローバルな人材と日本企業との間のギャップを埋めます。
+      </p>
+      
+      <!-- English Hero Subtext (Default hidden) -->
+      <p id="hero-desc-en" class="hero-description lang-toggle-text hidden">
+        We bridge the gap between global talent and Japanese enterprises through specialized data engineering, advanced XOps practices, and intensive language training.
+      </p>
+
+      
     </section>
-
-    <!-- 3. Tech Stack Section -->
-    <section class="badges-container" id="tech-stack-block">
-        <h2><span lang="en">Tech Stack: Target Industries</span><span lang="ja">技術スタック：対象業界戦略</span></h2>
-        <div class="badges-grid">
-            <div class="badge"><span lang="en">Finance</span><span lang="ja">財務</span></div>
-            <div class="badge"><span lang="en">E-Commerce</span><span lang="ja">Eコマース</span></div>
-            <div class="badge"><span lang="en">Manufacturing</span><span lang="ja">製造業</span></div>
-            <div class="badge"><span lang="en">Healthcare</span><span lang="ja">ヘルスケア</span></div>
+    
+    <!-- Japanese Content Hub -->
+    <div id="post-ja" class="lang-group" lang="ja">
+      <!-- SECTION 1: TOP 4 HORIZONTAL CONTAINER -->
+      <section class="grid-top-four">
+                <!-- CARD 1: CANDIDATE ROADMAP & SETUP INFO -->
+        <div class="grid-card text-rich-card">
+          <h2 class="card-main-title">候補者:</h2>
+          
+          <div class="card-sub-section">
+            <h3 class="card-accent-label">生きがいの約束</h3>
+            <p class="card-body-text">ハイブリッド人材/日本語能力試験N2レベルからフルスタックSE、PM、またはCTOへの3～5年間のロードマップ。</p>
+          </div>
+          
+          <div class="card-sub-section">
+            <h3 class="card-accent-label">ブートキャンプ指標 / 日本語語学研修</h3>
+            <p class="card-body-text"><span class="highlight-badge">4ヶ月</span> 700～800時間の集中的なAWSクラウド対応トレーニング。</p>
+          </div>
+          
+          <div class="card-sub-section border-top-dash">
+            <h3 class="card-accent-label warning-color">リモート設定が必要です</h3>
+            <p class="card-body-text">高速インターネットインフラ、ホームテクセットアップ、法人用クラウド決済カード。</p>
+          </div>
         </div>
-    </section>
-
-    <!-- 4 & 5. Combined Horizontal Pipeline Section -->
-    <!-- Add this between your sections -->
-
-    <section class="main-pipeline-section">
         
-        <div class="horizontal-grid-layout">
+        <!-- CARD 2: ARCHITECTURE & FRAMEWORKS -->
+        <div class="grid-card text-rich-card">
+          <h2 class="card-main-title">ソリューション:</h2>
+          
+          <div class="card-sub-section">
+            <h3 class="card-accent-label">アーキテクチャーファースト</h3>
+            <p class="card-body-text">AI/ML導入の基盤となる、高度なドメインデータエンジニアリング（パイプライン、TLS、RAG、エージェントAI）を提供。</p>
+          </div>
+          
+          <div class="card-sub-section">
+            <h3 class="card-accent-label">マルチクラウドグリッド ＆ 仮想オフィスコア</h3>
+            <p class="card-body-text">SAP、ERP、CRM、XaaS、および需要予測とのネイティブパイプライン統合。</p>
+          </div>
+          
+          <div class="card-sub-section border-top-dash">
+            <h3 class="card-accent-label">作戦戦略 ＆ 提供フレームワーク</h3>
+            <p class="card-body-text">高度なツールによって透過的に管理される、本番環境に対応したワークロード。</p>
+          </div>
+        </div>
+
+        
+                   <!-- CARD 3: CORE CAPABILITIES -->
+        <div class="grid-card text-rich-card">
+          <h2 class="card-main-title">専門分野:</h2>
+          
+          <div class="card-sub-section">
+            <h3 class="card-accent-label">ガバナンス ＆ セキュリティ</h3>
+            <p class="card-body-text">クラウドIAM、セキュリティ、FinOps、監査・統制、および災害復旧・事業継続計画。</p>
+          </div>
+          
+          <div class="card-sub-section">
+            <h3 class="card-accent-label">コアエンジニアリング</h3>
+            <p class="card-body-text">プラットフォームエンジニアリング、クラウド移行、データ基盤、AI/MLOps。</p>
+          </div>
+          
+          <div class="card-sub-section border-top-dash">
+            <h3 class="card-accent-label">運用体制</h3>
+            <p class="card-body-text">高度なモニタリング、継続的な最適化、および監視運用管理。</p>
+          </div>
+        </div>
+
             
-            <!-- Left Card: Candidate Pipeline -->
-            <div class="card" id="candidates-block"><div></div>
-                <h2><span lang="en">Candidate Pipeline</span><span lang="ja">候補者パイプライン</span></h2>
-                <h3><span lang="en">The Ikigai Promise</span><span lang="ja">生きがいの約束</span></h3>
-                <p>
-                    <span lang="en">3–5 year roadmap from non-technical (But Sophisticated)/JLPT N2 to Full-Stack SE, PM, or CTO.</span>
-                    <span lang="ja">非技術職/日本語能力試験N2レベルからフルスタックSE、PM、またはCTOへの3～5年間のロードマップ。</span>
-                </p>
-                
-                <h3><span lang="en">Bootcamp Metric</span><span lang="ja">ブートキャンプ指標</span> / <span lang="en">Japanese Language Training</span><span lang="ja">日本語語学研修</span></h3>
-                <p>
-                    <span lang="en">4 months | 700–800 hours intensive AWS cloud-readiness training.</span>
-                    <span lang="ja">4ヶ月 | 700～800時間の集中的なAWSクラウド対応トレーニング。</span>
-                </p>
+        
+                <!-- CARD 4: INTERACTIVE FORMS HUBCARD -->
+        <div class="grid-card text-rich-card unified-form-card">
+          
+          <!-- Inner Navigation Tabs -->
+          <div class="card-hub-header padding-bottom-none">
+            <nav class="doc-tab-menu">
+              <button type="button" class="form-tab-btn active" data-form="candidate-form">候補者エントリー</button>
+              <button type="button" class="form-tab-btn" data-form="corporate-form">企業のお客様</button>
+            </nav>
+          </div>
 
-                <h3><span lang="en">Remote Setup</span><span lang="ja">リモートセットアップ</span></h3>
-                <p>
-                    <span lang="en">Speed internet infrastructure, ergonomic allowance, and cloud-entry cards.</span>
-                    <span lang="ja">高速インターネットインフラ、ホームテクセットアップ、法人用クラウド決済カード。</span>
-                </p>
-            </div>
-
-            <!-- Right Card: Enterprise Systems -->
-            <div class="card" id="enterprise-block">
-                <h2><span lang="en">Enterprise Systems</span><span lang="ja">企業システム</span></h2>
-                <h3><span lang="en">Architecture First</span><span lang="ja">アーキテクチャーファースト</span></h3>
-                <p>
-                    <span lang="en">Heavy domain data engineering (Pipelines, TLS, RAG, Agentic AI) prior to AI/ML deployment.</span>
-                    <span lang="ja">AI/ML導入の基盤となる、高度なドメインデータエンジニアリング（パイプライン、TLS、RAG、エージェントAI）を提供。</span>
-                </p>
-
-                <h3><span lang="en">Multi-Cloud Grid & Virtual Office Core</span><span lang="ja">マルチクラウドグリッド ＆ 仮想オフィスコア</span></h3>
-                <p>
-                    <span lang="en">Native pipeline integration with SAP, ERP, CRM, XaaS, and Demand Forecasting.</span>
-                    <span lang="ja">SAP、ERP、CRM、XaaS、および需要予測とのネイティブパイプライン統合。</span>
-                </p>
-
-                <h3><span lang="en">Operational Strategy & Delivery Frameworks</span><span lang="ja">作戦戦略 ＆ 提供フレームワーク</span></h3>
-                <p>
-                    <span lang="en">Production-ready workloads managed transparently via elite tools.</span>
-                    <span lang="ja">高度なツールによって透過的に管理される、本番環境に対応したワークロード。</span>
-                </p>
-            </div>
-
-        </div>
-    </section>
-
-    <!-- 7. Interactive Sliding Form Section -->
-    <section class="form-section" id="interactive-form-section">
-        <div class="form-toggle">
-            <button class="tab-btn active" id="tabCandidate" onclick="switchForm('candidate')">
-                <span lang="en">Candidate Entry</span><span lang="ja">候補者エントリー</span>
-            </button>
-            <button class="tab-btn" id="tabEnterprise" onclick="switchForm('enterprise')">
-                <span lang="en">Hire Talent</span><span lang="ja">人材採用</span>
-            </button>
-        </div>
-
-        <div class="form-slider-window">
-            <div class="form-slider-track" id="formTrack">
-                
-                <!-- Candidate Form -->
-                <div class="form-container">
-                    <form id="candidateActualForm" onsubmit="openReviewModal(event, 'candidate')">
-                        <div class="form-group">
-                            <label><span lang="en">Full Name</span><span lang="ja">フルネーム</span></label>
-                            <input type="text" id="candName" required>
-                        </div>
-                        <div class="form-group">
-                            <label><span lang="en">Email Address</span><span lang="ja">メールアドレス</span></label>
-                            <input type="email" id="candEmail" required>
-                        </div>
-                        <div class="form-group">
-                            <label><span lang="en">Phone Number & Messaging Accounts</span><span lang="ja">電話番号 ＆ メッセンジャーアカウント</span></label>
-                            <input type="text" id="candPhone" placeholder="国内は電話番号だけで大丈夫です/Whatsapp ID/Line ID/+,Code,PhoneNumber" required>
-                        </div>
-                        <div class="form-group">
-                            <label><span lang="en">JLPT Level</span><span lang="ja">日本語能力試験レベル</span></label>
-                            <select id="candJlpt">
-                                <option value="N1">N1</option>
-                                <option value="N2">N2</option>
-                                <option value="N3">N3</option>
-                                <option value="None">None / なし</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label><span lang="en">AWS Knowledge</span><span lang="ja">AWSの知識 / 経験</span></label>
-                            <div class="radio-group">
-                                <label><input type="radio" name="candAws" value="Yes" checked> <span lang="en">Yes</span><span lang="ja">はい</span></label>
-                                <label><input type="radio" name="candAws" value="No"> <span lang="en">No</span><span lang="ja">いいえ</span></label>
-                            </div>
-                        </div>
-                        <!--
-                        Context-Driven Fields for Candidate Track
-                        <div class="form-group">
-                            <label>
-                                <span lang="en">Resume Upload (Optional)</span>
-                                <span lang="ja">履歴書のアップロード (任意)</span>
-                            </label>
-                            <input type="file" id="candFile">
-                        </div>
-                        
-                         
-                        -->       
-                        <div class="form-group">
-                            <label>
-                                <span lang="ja">GitHub プロフィール URL</span>
-                                <span lang="en">GitHub Profile URL</span>
-                            </label>
-                            <input type="url" id="candGithub" placeholder="https://github.com/username" required>
-                        </div>
-                        <button type="submit" class="submit-btn" id="candSubmitBtn">
-                            <span lang="en">SUBMIT APPLICATION</span><span lang="ja">送信する</span>
-                        </button>
-                    </form>
+          <!-- FORM PANE 1: CANDIDATE REGISTRATION -->
+          <div id="candidate-form-pane" class="form-display-pane">
+            <form id="candidate-form" class="custom-hub-form" novalidate>
+              <div class="form-group">
+                <label>フルネーム</label>
+                <input type="text" name="candidate_name" required placeholder="山田 太郎">
+              </div>
+              <div class="form-group">
+                <label>メールアドレス</label>
+                <input type="email" name="candidate_email" required placeholder="name@example.com">
+              </div>
+              <div class="form-group">
+                <label>電話番号 ＆ メッセンジャーアカウント</label>
+                <input type="text" name="candidate_contact" required placeholder="090-0000-0000 / Slack: @name">
+              </div>
+              
+              <!-- Radio Grid System -->
+              <div class="form-group">
+                <label>日本語能力試験レベル</label>
+                <div class="radio-flex-row">
+                  <label class="radio-item"><input type="radio" name="jlpt_level" value="N1" required> N1</label>
+                  <label class="radio-item"><input type="radio" name="jlpt_level" value="N2"> N2</label>
+                  <label class="radio-item"><input type="radio" name="jlpt_level" value="N3"> N3</label>
+                  <label class="radio-item"><input type="radio" name="jlpt_level" value="なし"> なし</label>
                 </div>
-
-                <!-- Enterprise Form -->
-                <div class="form-container">
-                    <form id="enterpriseActualForm" onsubmit="openReviewModal(event, 'enterprise')">
-                        <div class="form-group">
-                            <label><span lang="en">Company Name</span><span lang="ja">会社名</span></label>
-                            <input type="text" id="entCompany" required>
-                        </div>
-                        <div class="form-group">
-                            <label><span lang="en">Email Address</span><span lang="ja">メールアドレス</span
-                            </span></label>
-                            <input type="email" id="entEmail" required>
-                        </div>
-                        <div class="form-group">
-                            <label><span lang="en">Corporate Phone Number & Contact Accounts</span><span lang="ja">担当者電話番号 ＆ 連絡用アカウント</span></label>
-                            <input type="text" id="entPhone" placeholder="国内は電話番号だけで大丈夫です/Whatsapp ID/Line ID/+,Code,PhoneNumber" required>
-                        </div>
-                        <div class="form-group">
-                            <label><span lang="en">Target Sector</span><span lang="ja">対象セクター</span></label>
-                            <input type="text" id="entSector" required>
-                        </div>
-                        <div class="form-group">
-                            <label><span lang="en">Project Need</span><span lang="ja">ご相談内容 / プロジェクト要件</span></label>
-                            <input type="text" id="entProject" required>
-                        </div>
-                        <button type="submit" class="submit-btn" id="entSubmitBtn">
-                            <span lang="en">ENTERPRISE CONSULTATION</span><span lang="ja">企業コンサルティングを依頼する</span>
-                        </button>
-                    </form>
+              </div>
+              
+              <div class="form-group">
+                <label>AWSの知識 / 経験</label>
+                <div class="radio-flex-row">
+                  <label class="radio-item"><input type="radio" name="aws_exp" value="あり" required> あり</label>
+                  <label class="radio-item"><input type="radio" name="aws_exp" value="なし"> なし</label>
                 </div>
+              </div>
+              
+              <div class="form-group">
+                <label>GitHub プロフィール URL</label>
+                <input type="url" name="github_url" required placeholder="https://github.com">
+              </div>
 
-            </div>
-        </div>
-    </section>
+              <!-- Inline Error Alert Message Area -->
+              <div id="candidate-error-msg" class="form-validation-alert hidden"></div>
 
-    <!-- Review Modal Frame Overlay -->
-    <div class="modal-overlay" id="reviewModal">
-        <div class="modal-card">
-            <h3><span lang="en">Confirm Entry Records</span><span lang="ja">入力内容の確認</span></h3>
-            <div id="modalTargetContent"></div>
-            <div class="modal-actions">
-                <button class="modal-btn btn-back" onclick="closeReviewModal()"><span lang="en">Back to Edit</span><span lang="ja">修正する</span></button>
-                <button class="modal-btn btn-confirm" id="modalConfirmBtn" onclick="commitFinalRegistration()"><span lang="en">Confirm & Send</span><span lang="ja">確定して送信</span></button>
+              <div class="form-action-row">
+                <button type="submit" class="form-submit-btn">送信</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- FORM PANE 2: CORPORATE INQUIRIES -->
+          <div id="corporate-form-pane" class="form-display-pane hidden">
+            <form id="corporate-form" class="custom-hub-form" novalidate>
+              <div class="form-group">
+                <label>会社名</label>
+                <input type="text" name="company_name" required placeholder="株式会社テック">
+              </div>
+              <div class="form-group">
+                <label>メールアドレス (業務用)</label>
+                <input type="email" name="company_email" required placeholder="corp@company.com">
+              </div>
+              <div class="form-group">
+                <label>担当者電話番号 ＆ 連絡用アカウント</label>
+                <input type="text" name="company_contact" required placeholder="03-0000-0000 / Teams: @name">
+              </div>
+              <div class="form-group">
+                <label>対象セクター</label>
+                <input type="text" name="company_sector" required placeholder="データエンジニアリング / 金融IT">
+              </div>
+              <div class="form-group">
+                <label>ご相談内容 / プロジェクト要件</label>
+                <textarea name="project_requirements" required placeholder="プロジェクトの規模や技術スタックの要件をご記載ください。"></textarea>
+              </div>
+
+              <div id="corporate-error-msg" class="form-validation-alert hidden"></div>
+
+              <div class="form-action-row">
+                <button type="submit" class="form-submit-btn">送信</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- UNIFIED LOCAL SAMEDIV REVIEW SUMMARY PANE -->
+          <div id="form-review-pane" class="form-display-pane hidden">
+            <h3 class="review-title">入力内容の確認</h3>
+            <div id="review-content-dump" class="review-data-wrapper"></div>
+            <div class="form-action-row margin-top-md">
+              <button type="button" id="review-back-btn" class="form-tab-btn">修正する</button>
+              <button type="button" id="review-confirm-btn" class="form-submit-btn">確定して送信</button>
             </div>
+          </div>
+
         </div>
+        
+      </section>
+
+      <!-- SECTION 2: MIDDLE 3 VERTICAL CONTAINER -->
+      <!-- LEFT CARD: INTERACTIVE LINKS SELECTOR Menu -->
+      <!-- SECTION 2: MIDDLE INTERACTIVE DOCUMENTATION HUB (UNIFIED INTO ONE CARD) -->
+      <section class="grid-middle-three-unified">
+        
+        <!-- SINGLE UNIFIED HUBCARD -->
+        <div class="grid-card unified-doc-card">
+          
+          <!-- Unified Header containing Inner Title & Document Tab Links -->
+          <div class="card-hub-header">
+            <div class="hub-title-block">
+              <h2 class="card-main-title">技術文書</h2>
+              <p class="card-body-text">検証済みのクラウド設計フレームワーク</p>
+            </div>
+            
+            <!-- Inner Navigation Tabs (Clean Text Only) -->
+            <!-- Responsive Tabs -->
+    <div class="tabs-container" id="tabs"></div>
+
+    <!-- Content -->
+    <div id="content" class="markdown-body prose prose-blue mt-8"></div>
+          </div>
+
+          
+          
+          <!-- Unified Footer Asset -->
+          <div class="card-hub-footer">
+            <span class="highlight-badge">Production v2.6.0</span>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- SECTION 3: BOTTOM 1 HORIZONTAL CONTAINER -->
+      <section class="grid-bottom-one">
+        <div class="grid-card horizontal-full">
+          <!-- [JA] PUT YOUR CONTENTS HERE (Full-Width Card) -->
+             <!-- Global Footer Container Area -->
+  <footer class="blog-footer-global">
+    <div class="footer-wrapper">
+      
+      <!-- Column 1: Corporate Profile Summary -->
+      <div class="footer-col brand-col">
+        <div class="footer-logo">X-Engineers / 企業</div>
+        <p class="footer-desc">
+          グローバルな技術人材と日本企業を繋ぐ、データエンジニアリング・XOps専門のITソリューション・人材紹介パートナー。
+        </p>
+      </div>
+
+      <!-- Column 2: Licensing and Accreditations -->
+      <div class="footer-col compliance-col">
+        <h3 class="footer-section-title">許認可・運営体制</h3>
+        <p class="footer-legal-text">厚生労働大臣許可番号</p>
+        <p class="footer-permit-number">有料職業紹介事業：13-ユ-XXXXXX</p>
+        <p class="footer-permit-number">労働者派遣事業：派13-XXXXXX</p>
+      </div>
+
+      <!-- Column 3: Quick Navigation References -->
+      <div class="footer-col links-col">
+        <h3 class="footer-section-title">企業情報</h3>
+        <nav class="footer-nav">
+          <a href="#company" class="footer-link">会社概要</a>
+          <a href="#privacy" class="footer-link">個人情報保護方針 (プライバシーポリシー)</a>
+          <a href="#terms" class="footer-link">情報セキュリティ基本方針</a>
+          <a href="#compliance" class="footer-link">コンプライアンス規約</a>
+        </nav>
+      </div>
+
     </div>
 
-    <!-- UI & Network Pipeline Engine -->
+    <!-- Bottom Attribution Area -->
+    <div class="footer-bottom">
+      <div class="footer-bottom-wrapper">
+        <p class="copyright-notice">&copy; 2026 X-Engineers,MM Digital Engagemement Inc. All Rights Reserved.</p>
+        <p class="footer-sub-text">当サイトに掲載されているすべてのアーキテクチャ・テキストの無断転載を禁じます。</p>
+      </div>
+    </div>
+  </footer>
 
+          </div>
+      </section>
+    </div>
+
+    <!-- English Content Hub (Hidden by default) -->
+    <div id="post-en" class="lang-group hidden" lang="en">
+      <!-- SECTION 1: TOP 4 HORIZONTAL CONTAINER -->
+      <section class="grid-top-four">
+        <div class="grid-card"><!-- [EN] PUT YOUR CONTENTS HERE (Card 1) --></div>
+        <div class="grid-card"><!-- [EN] PUT YOUR CONTENTS HERE (Card 2) --></div>
+        <div class="grid-card"><!-- [EN] PUT YOUR CONTENTS HERE (Card 3) --></div>
+        <div class="grid-card"><!-- [EN] PUT YOUR CONTENTS HERE (Card 4) --></div>
+      </section>
+
+      <!-- SECTION 2: MIDDLE 3 VERTICAL CONTAINER -->
+      <section class="grid-middle-three">
+        <div class="grid-card vertical-mode"><!-- [EN] PUT YOUR CONTENTS HERE (Card 1) --></div>
+        <div class="grid-card vertical-mode"><!-- [EN] PUT YOUR CONTENTS HERE (Card 2) --></div>
+        <div class="grid-card vertical-mode"><!-- [EN] PUT YOUR CONTENTS HERE (Card 3) --></div>
+      </section>
+
+      <!-- SECTION 3: BOTTOM 1 HORIZONTAL CONTAINER -->
+      <section class="grid-bottom-one">
+        <div class="grid-card horizontal-full"><!-- [EN] PUT YOUR CONTENTS HERE (Full-Width Card) --></div>
+      </section>
+    </div>
+
+  </main>
+
+  <script src="script.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>
