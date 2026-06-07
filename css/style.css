@@ -67,9 +67,9 @@ body { font-family: system-ui, -apple-system, sans-serif; }
     }
 
     .tab-button.active {
-      border-bottom: 4px solid #3b82f6;
+      border-bottom: 1px solid #3b82f6;
       color: #3b82f6;
-      font-weight: 600;
+      font-weight: 400;
     }
 
     /* Mobile: Stack vertically */
