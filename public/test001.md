@@ -1,13 +1,13 @@
 ---
-title: "記事タイトル"
-tags:                 # タグ（配列, 全て小文字の制約はない）
-  - AI
+title: 記事タイトル
+tags:
   - GitHub
-private: false        # false: 公開 / true: 限定共有
-updated_at: ""        # 投稿時に自動入力
-id: null              # 投稿時にUUIDが自動入力
+  - AI
+private: false
+updated_at: '2026-06-07T13:42:15+09:00'
+id: 3ced1a6532d634f921e7
 organization_url_name: null
 slide: false
-ignorePublish: false  # trueでpublish対象外
+ignorePublish: false
 ---
 Test Qiita
