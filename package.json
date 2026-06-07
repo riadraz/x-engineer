@@ -1,0 +1,29 @@
+{
+  "name": "x-engineer",
+  "version": "1.0.0",
+  "description": "cross post zenn,qiita,xengineer,github",
+  "keywords": [
+    "talent"
+  ],
+  "homepage": "https://github.com/riadraz/x-engineer#readme",
+  "bugs": {
+    "url": "https://github.com/riadraz/x-engineer/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/riadraz/x-engineer.git"
+  },
+  "license": "ISC",
+  "author": "riadraz",
+  "type": "commonjs",
+  "main": "index.html",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "zenn-cli": "^0.4.8"
+  }
+}
