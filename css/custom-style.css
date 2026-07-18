@@ -1,0 +1,105 @@
+body { font-family: system-ui, -apple-system, sans-serif; }
+    
+    .markdown-body {
+      max-width: 900px;
+      margin: 0 auto;
+      line-height: 1.75;
+    }
+    
+    /* Grok-like Code Blocks */
+    .markdown-body pre {
+      background: #1f2937;
+      color: #e5e7eb;
+      padding: 1rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      position: relative;
+      margin: 1.5rem 0;
+      border: 1px solid #374151;
+    }
+    
+    .markdown-body pre code {
+      font-family: ui-monospace, monospace;
+      font-size: 0.95rem;
+      background: none !important;
+      padding: 0;
+      line-height: 1.5;
+    }
+    
+    .copy-btn {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      background: #374151;
+      color: #9ca3af;
+      border: none;
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      z-index: 10;
+    }
+    
+    .copy-btn:hover { background: #4b5563; color: white; }
+    .copy-btn.copied { background: #10b981; color: white; }
+    
+    .markdown-body code:not(pre code) {
+      background: #374151;
+      padding: 0.1rem 0.3rem;
+      border-radius: 4px;
+      font-family: ui-monospace, monospace;
+    }
+
+    /* ===================== TABS RESPONSIVE ===================== */
+    .tabs-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      border-bottom: 2px solid #e5e7eb;
+      padding-bottom: 1rem;
+    }
+
+    .tab-button {
+      transition: all 0.2s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .tab-button.active {
+      border-bottom: 1px solid #3b82f6;
+      color: #3b82f6;
+      font-weight: 400;
+    }
+
+    /* Mobile: Stack vertically */
+    @media (max-width: 767px) {
+      .tabs-container {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .tab-button {
+        text-align: left;
+        padding: 0.75rem 1rem;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+      }
+      .tab-button.active {
+        border-color: #3b82f6;
+        border-bottom-width: 4px;
+      }
+    }
+
+    /* Tablet & Desktop: Horizontal with scroll */
+    @media (min-width: 768px) {
+      .tabs-container {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+        scrollbar-width: thin;
+      }
+      .tab-button {
+        padding: 0.75rem 1.25rem;
+        border-bottom: 2px solid transparent;
+      }
+    }

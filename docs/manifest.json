@@ -1,0 +1,7 @@
+[
+  { "id": "aws-security",    "title": "AWSのセキュリティとコンプライアンス",        "file": "docs/aws-security.md" },
+  { "id": "cost-optimization", "title": "AWSコスト最適化",                          "file": "docs/cost-optimization.md" },
+  { "id": "db-migration",    "title": "AWS DB移行",                                 "file": "docs/db-migration.md" },
+  { "id": "iot-core-mqtt",   "title": "AWS IoT Core MQTT ベストプラクティス",       "file": "docs/iot-core-mqtt-bestpractice-ja.md" }
+  
+]

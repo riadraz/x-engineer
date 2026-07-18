@@ -4,14 +4,6 @@ function initTailwind() {
 }
 initTailwind();
 
-// Post configuration (title + relative path to .md file)
-const posts = [
-  { id: 'aws-security',    title: 'AWSのセキュリティとコンプライアンス',     file: 'docs/aws-security.md' },
-  { id: 'cost-optimization',   title: 'AWSコスト最適化', file: 'docs/cost-optimization.md' },
-  { id: 'db-migration',       title: 'AWS DB移行',         file: 'docs/db-migration.md' },
-  // Add more files here
-];
-
 async function loadMarkdown(url) {
   try {
     const res = await fetch(url);
@@ -23,19 +15,19 @@ async function loadMarkdown(url) {
   }
 }
 
-function createTabs() {
+async function createTabs() {
+  const posts = await (await fetch('docs/manifest.json')).json();
   const tabsContainer = document.getElementById('tabs');
   tabsContainer.innerHTML = '';
 
   posts.forEach((post, index) => {
     const tab = document.createElement('button');
-    tab.className = `tab-button px-6 py-3 text-base md:text-lg border border-transparent rounded-lg md:rounded-none md:border-b-2 ${index === 0 ? 'active' : ''}`;
+    tab.className = `tab-button${index === 0 ? ' active' : ''}`;
     tab.textContent = post.title;
     tab.onclick = () => loadPost(post);
     tabsContainer.appendChild(tab);
   });
 
-  // Load first post
   loadPost(posts[0]);
 }
 
@@ -48,7 +40,6 @@ async function loadPost(post) {
   hljs.highlightAll();
   addCopyButtons();
 
-  // Update active tab
   document.querySelectorAll('.tab-button').forEach(btn => {
     btn.classList.toggle('active', btn.textContent === post.title);
   });
