@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ---
 title: AWS IoT Core MQTT ベストプラクティス
 tags: [aws, iot, mqtt]
@@ -6,8 +5,6 @@ private: false
 qiita_id: f9d6d64a7b58125e0fda
 lang: ja
 ---
-=======
->>>>>>> b189080 (投稿は1行に3つずつ表示され、タブコンテナ内で増えるにつれて折り返して下の行へ送られます。)
 
 # AWS IoT Core MQTT ベストプラクティス
 
