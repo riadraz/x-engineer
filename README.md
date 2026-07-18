@@ -139,3 +139,20 @@ jobs:
 }
 ```
 </details>
+
+---
+
+## 📄 技術ドキュメント一覧
+
+<details>
+<summary><b>📂 docs/ フォルダの記事を見る</b></summary>
+
+- [AWSのセキュリティとコンプライアンス](docs/aws-security.md)
+- [AWS Well-Architected フレームワーク](docs/aws-well-architected-ja.md)
+- [AWSコスト最適化](docs/cost-optimization.md)
+- [AWS DB移行](docs/db-migration.md)
+- [AWS IoT Greengrass V2 入門](docs/greengrass-v2-intro-ja.md)
+- [AWS IoT Core MQTT ベストプラクティス](docs/iot-core-mqtt-bestpractice-ja.md)
+- [Lambda Edge キオスク](docs/lambda-edge-kiosk-ja.md)
+
+</details>
