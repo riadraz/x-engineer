@@ -23,6 +23,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Generate manifest.json
+        run: node generate-manifest.js
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
