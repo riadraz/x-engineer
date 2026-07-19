@@ -30,7 +30,8 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const res = await fetch(filePath);
       if (!res.ok) throw new Error(res.status);
-      const md = await res.text();
+      const raw = await res.text();
+      const md = raw.replace(/^---[\s\S]*?---\n?/, '');
       contentArea.innerHTML = marked.parse(md);
       contentArea.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block));
     } catch (err) {
