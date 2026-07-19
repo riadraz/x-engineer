@@ -154,5 +154,6 @@ jobs:
 - [AWS IoT Greengrass V2 入門](docs/greengrass-v2-intro-ja.md)
 - [AWS IoT Core MQTT ベストプラクティス](docs/iot-core-mqtt-bestpractice-ja.md)
 - [Lambda Edge キオスク](docs/lambda-edge-kiosk-ja.md)
+- [AWS コンテンツリレーハブ](content-relay-hub-overview-ja.md)
 
 </details>
