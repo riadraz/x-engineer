@@ -1,7 +1,42 @@
 [
-  { "id": "aws-security",    "title": "AWSのセキュリティとコンプライアンス",        "file": "docs/aws-security.md" },
-  { "id": "cost-optimization", "title": "AWSコスト最適化",                          "file": "docs/cost-optimization.md" },
-  { "id": "db-migration",    "title": "AWS DB移行",                                 "file": "docs/db-migration.md" },
-  { "id": "iot-core-mqtt",   "title": "AWS IoT Core MQTT ベストプラクティス",       "file": "docs/iot-core-mqtt-bestpractice-ja.md" }
-  
+  {
+    "id": "aws-security",
+    "title": "Aws Security",
+    "file": "docs/aws-security.md"
+  },
+  {
+    "id": "aws-well-architected-ja",
+    "title": "Aws Well Architected (JA)",
+    "file": "docs/aws-well-architected-ja.md"
+  },
+  {
+    "id": "content-relay-hub-overview-ja",
+    "title": "Content Relay Hub Overview (JA)",
+    "file": "docs/content-relay-hub-overview-ja.md"
+  },
+  {
+    "id": "cost-optimization",
+    "title": "Cost Optimization",
+    "file": "docs/cost-optimization.md"
+  },
+  {
+    "id": "db-migration",
+    "title": "Db Migration",
+    "file": "docs/db-migration.md"
+  },
+  {
+    "id": "greengrass-v2-intro-ja",
+    "title": "Greengrass V2 Intro (JA)",
+    "file": "docs/greengrass-v2-intro-ja.md"
+  },
+  {
+    "id": "iot-core-mqtt-bestpractice-ja",
+    "title": "Iot Core Mqtt Bestpractice (JA)",
+    "file": "docs/iot-core-mqtt-bestpractice-ja.md"
+  },
+  {
+    "id": "lambda-edge-kiosk-ja",
+    "title": "Lambda Edge Kiosk (JA)",
+    "file": "docs/lambda-edge-kiosk-ja.md"
+  }
 ]
