@@ -1,0 +1,13 @@
+[
+  {
+    "id": "aws-iot-ggv2-en",
+    "title": "Aws iot",
+    "file": "docs/aws-iot-ggv2-en.md"
+  },
+  {
+    "id": "aws-iot-ggv2-ja",
+    "title": "Aws iot",
+    "file": "docs/aws-iot-ggv2-ja.md"
+  }
+
+]
