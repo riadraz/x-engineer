@@ -1,13 +1,13 @@
 [
   {
     "id": "aws-iot-ggv2-en",
-    "title": "Aws iot",
-    "file": "docs/aws-iot-ggv2-en.md"
+    "title": "Aws iot English version",
+    "file": "docs/aws-iot-ggv2-202608-en.md"
   },
   {
     "id": "aws-iot-ggv2-ja",
-    "title": "Aws iot",
-    "file": "docs/aws-iot-ggv2-ja.md"
+    "title": "Aws iot 日本語版",
+    "file": "docs/aws-iot-ggv2-202608-ja.md"
   }
 
 ]

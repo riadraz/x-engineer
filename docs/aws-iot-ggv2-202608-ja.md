@@ -1,19 +1,7 @@
+
 ---
-title: aws-iot-ggv2-202608
-tags:
-  - 'aws'
-private: false
-updated_at: ''
-id: null
-organization_url_name: null
-slide: false
-ignorePublish: false
-posting_campaign_uuid: null
-agreed_posting_campaign_term: false
+AWS IOT GREENGRASS V2-2026/08, 初期化方法
 ---
-# new article body
-------------------------------
-## 日本語版 (Japanese Version)
 
    1. 🚀 AWS IoT Greengrass v2 でエッジコンピューティングを効率化
    2. AWS IoT Greengrass v2 (GGv2) は、クラウドの機能をローカルのエッジデバイスに直接もたらします。
