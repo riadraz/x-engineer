@@ -58,7 +58,12 @@ npx zenn new:article
 npx zenn new:book
 ```
 
-## Hosting
+## Backend Integration
+- API Gateway endpoint: `POST https://gqns1d7wza.execute-api.us-east-1.amazonaws.com/prod/register`
+- Lambda function: `xEngineer-commitFinalRegistration` (Node.js, us-east-1)
+- DynamoDB table: `LeadsAndApplications` (us-east-1)
+- SES: sends confirmation email to submitter + admin alert to `hr-alerts@mail.moses20608.click`
+- CORS: enabled on API Gateway (`Access-Control-Allow-Origin: *`)
 - GitHub Pages (static, no server-side rendering)
 - Custom domain via `CNAME` file
 - Permissions: `contents: read`, `pages: write`, `id-token: write`

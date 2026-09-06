@@ -73,9 +73,20 @@ document.querySelectorAll('.tab-button').forEach(btn => {
 ### Form Validation Pattern
 1. Use HTML5 `novalidate` on `<form>` to suppress native UI
 2. Call `formElement.checkValidity()` manually in JS
-3. Show custom error via `#formId-error-msg` element (`.form-validation-alert`)
+3. Show custom error via `#candidate-error-msg` / `#corporate-error-msg` (`.form-validation-alert`) — error element IDs use the prefix only, not the full form ID
 4. Apply custom business rules after native validation passes
 5. On success, transition to review pane — never submit directly to a server
+
+### Form → Lambda Submission Pattern
+- Scope form tab button selectors to `.card-hub-header` to avoid selecting review pane buttons with the same class
+- Remap frontend field names to Lambda's expected payload before `fetch()`:
+  - Candidate: `{ fullName, email, contact, jlptLevel, awsExperience, githubUrl }`
+  - Corporate: `{ companyName, email, contact, sector, projectRequirements }`
+- Lambda uses `body.companyName === undefined` to distinguish candidate vs corporate — never include `companyName` in candidate payload
+- Always restore review pane action row visibility (`classList.remove('hidden')`) at the start of `executeFormReviewRouting` to prevent it staying hidden after a prior successful submission
+- API Gateway endpoint: `https://gqns1d7wza.execute-api.us-east-1.amazonaws.com/prod/register`
+- Lambda function: `xEngineer-commitFinalRegistration` (us-east-1)
+- DynamoDB table: `LeadsAndApplications`
 
 ---
 

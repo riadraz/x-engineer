@@ -16,11 +16,11 @@
 ---
 
 ## 💡 Why Choose Greengrass v2?
-1. **Reduced Latency**
+* 1. **Reduced Latency**
    It drastically reduces latency by processing data locally without waiting for cloud round-trips.
-2. **Offline Resilience**
+* 2. **Offline Resilience**
    Your devices can operate reliably even during temporary internet connectivity outages.
-3. **Bandwidth Savings**
+* 3. **Bandwidth Savings**
    Local data filtering helps save bandwidth costs by sending only essential metrics to AWS.
 
 ---

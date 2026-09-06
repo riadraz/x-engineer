@@ -60,8 +60,8 @@ x-engineer/
 ### index.html → js/script.js → docs/manifest.json → docs/*.md
 The main page loads `script.js` which reads `manifest.json` to build the tabbed documentation hub, fetches markdown files, and renders them via `marked.js` with `highlight.js` syntax highlighting.
 
-### index.html → js/app.js
-`app.js` handles all interactive form logic: tab switching between candidate/corporate forms, field validation, review pane display, and final submission flow.
+### index.html → js/script.js (form logic)
+All form logic lives in `script.js` inside `DOMContentLoaded`: tab switching between candidate/corporate forms, field validation, review pane display, Lambda submission, and success/error handling. `app.js` is used only for the documentation hub tab rendering.
 
 ### CSS Architecture
 - `style.css`: structural grid system, card components, header/footer layout
