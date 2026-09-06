@@ -19,19 +19,13 @@ x-engineer/
 │
 ├── docs/                   # Technical markdown articles (rendered in-page)
 │   ├── manifest.json       # Tab/document registry for the doc hub
-│   ├── aws-security.md
-│   ├── aws-well-architected-ja.md
-│   ├── cost-optimization.md
-│   ├── db-migration.md
-│   ├── greengrass-v2-intro-ja.md
-│   ├── iot-core-mqtt-bestpractice-ja.md
-│   └── lambda-edge-kiosk-ja.md
+│   ├── aws-iot-ggv2-202608-en.md  # AWS IoT Greengrass V2 (English)
+│   └── aws-iot-ggv2-202608-ja.md  # AWS IoT Greengrass V2 (Japanese)
+│
+├── generate-manifest.js    # Script to auto-generate docs/manifest.json from docs/
 │
 ├── articles/               # Zenn/Qiita cross-post article sources (.md)
-│   ├── 185209a79d6ef9.md
-│   ├── 654ef8ec255893.md
-│   ├── example-article1.md
-│   └── example-article2.md
+│   └── .keep               # Directory placeholder (no articles yet)
 │
 ├── books/                  # Zenn book format content
 │   └── a59b538ac31c3d/

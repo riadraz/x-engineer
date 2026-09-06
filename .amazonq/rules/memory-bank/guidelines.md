@@ -120,9 +120,13 @@ document.querySelectorAll('.tab-button').forEach(btn => {
 ## Content & Documentation Conventions
 
 ### Adding a New Technical Document
-1. Create `docs/your-doc-ja.md` (Japanese preferred, suffix `-ja` for Japanese)
-2. Add entry to `docs/manifest.json`
+1. Create `docs/your-doc-ja.md` (Japanese preferred, suffix `-ja` for Japanese; `-en` for English)
+2. Add entry to `docs/manifest.json` — or run `node generate-manifest.js` to auto-regenerate it
 3. Document auto-appears as a tab in the doc hub — no JS changes needed
+
+### Bilingual Doc Pairs
+- Docs come in language pairs: `*-en.md` and `*-ja.md` (e.g. `aws-iot-ggv2-202608-en.md` / `aws-iot-ggv2-202608-ja.md`)
+- Each file gets its own manifest entry with a distinct `id` and `title`
 
 ### Article Cross-Posting
 - Place Zenn articles in `articles/` with Zenn-format frontmatter
