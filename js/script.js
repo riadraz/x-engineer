@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-  const LAMBDA_URL = process.env.LAMBDA_URL;
+  const LAMBDA_URL = 'https://gqns1d7wza.execute-api.us-east-1.amazonaws.com/prod/register';
 
   // --- FIELD LABEL MAPPINGS (per language) ---
   const fieldLabelMappingJa = {
