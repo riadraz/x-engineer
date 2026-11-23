@@ -22,8 +22,5 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "dependencies": {
-    "zenn-cli": "^0.4.8"
   }
 }

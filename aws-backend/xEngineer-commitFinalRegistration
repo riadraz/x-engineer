@@ -1,0 +1,178 @@
+import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb";
+import crypto from "node:crypto";
+
+// Initialization with exact regions matching infrastructure layout
+const ses = new SESClient({ region: "us-east-1" });
+const ddbClient = new DynamoDBClient({ region: "us-east-1" });
+const docClient = DynamoDBDocumentClient.from(ddbClient);
+
+// Prevent HTML injection in email templates
+const escapeHtml = (str = "") =>
+    String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+
+export const handler = async (event) => {
+    const corsHeaders = {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Content-Type"
+    };
+
+    try {
+        // Parse inbound cross-origin stringified parameters
+        const body = typeof event.body === "string" ? JSON.parse(event.body) : (event.body || {});
+
+        // Safer check: handles undefined, null, or empty string ""
+        const isCandidate = !body.companyName || String(body.companyName).trim() === "";
+        const targetEmail = String(body.email || "").trim();
+        const rawTargetName = isCandidate ? body.fullName : body.companyName;
+        const safeTargetName = escapeHtml(rawTargetName || (isCandidate ? "Applicant" : "Partner"));
+
+        if (!targetEmail) {
+            return {
+                statusCode: 400,
+                headers: corsHeaders,
+                body: JSON.stringify({ error: "Missing required email field." })
+            };
+        }
+
+        // Configuration Values
+        const VERIFIED_SOURCE_EMAIL = process.env.VERIFIED_SOURCE_EMAIL || "mmcldint@mail.moses20608.click";
+        const SENDER_DISPLAY_NAME = process.env.SENDER_DISPLAY_NAME || "MM Digital Engagement";
+        const FORMATTED_SOURCE = `"${SENDER_DISPLAY_NAME}" <${VERIFIED_SOURCE_EMAIL}>`;
+        const ADMIN_INBOX = process.env.ADMIN_INBOX || "riadraz@gmail.com";
+        const TABLE_NAME = process.env.TABLE_NAME || "LeadsAndApplications";
+
+        // Generate Unique Ingestion Identifier and Timestamp
+        const entryId = crypto.randomUUID();
+        const timestamp = new Date().toISOString();
+
+        // Footer to improve deliverability and establish sender legitimacy
+        const htmlFooter = `
+            <div style="margin-top: 28px; padding-top: 14px; border-top: 1px solid #eee; font-size: 12px; color: #777;">
+                <p style="margin: 0;"><strong>MM Digital Engagement Inc.</strong> | Osaka, Japan</p>
+                <p style="margin: 4px 0 0;">Web: <a href="https://x-engineer.moses20608.click" style="color: #555;">https://moses20608.click</a></p>
+                <p style="margin: 4px 0 0;">Reference ID: ${entryId}</p>
+            </div>`;
+
+        const textFooter = `\n\n----------------------------------------\nMM Digital Engagement Inc. | Osaka, Japan\nWeb: https://moses20608.click\nReference ID: ${entryId}`;
+
+        // Unified Bilingual Subject, HTML Body, and Plain-Text Body
+        const clientSubject = isCandidate
+            ? "Application Received / 応募を受け付けました"
+            : "Consultation Request Received / お問い合わせを受け付けました";
+
+        const clientHtmlBody = isCandidate
+            ? `<div style="font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif; line-height: 1.7; color: #333; max-width: 600px;">
+                <p>Dear ${safeTargetName},</p>
+                <p>Thank you for submitting your application to the technical pipeline track. Our admissions team is assessing your engineering background and JLPT metrics. We will contact you soon.</p>
+                <hr style="border: 0; border-top: 1px solid #ddd; margin: 20px 0;" />
+                <p>${safeTargetName} 様</p>
+                <p>この度はテクニカルパイプラインへのご応募、誠にありがとうございました。選考担当チームにて、エンジニアリングのバックグラウンドおよびJLPT（日本語能力試験）の基準を確認しております。追って担当者よりご連絡いたします。</p>
+                ${htmlFooter}
+               </div>`
+            : `<div style="font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif; line-height: 1.7; color: #333; max-width: 600px;">
+                <p>Dear ${safeTargetName} Team,</p>
+                <p>Thank you for requesting architecture advisory options. A domain engineering specialist is validating your target pipeline criteria and will reach out shortly.</p>
+                <hr style="border: 0; border-top: 1px solid #ddd; margin: 20px 0;" />
+                <p>${safeTargetName} ご担当者様</p>
+                <p>アーキテクチャアドバイザリーのご依頼、誠にありがとうございました。ドメインエンジニアリングの専門スタッフが、ご指定のパイプライン要件を確認しております。追って担当者よりご連絡いたします。</p>
+                ${htmlFooter}
+               </div>`;
+
+        const clientTextBody = isCandidate
+            ? `Dear ${rawTargetName || "Applicant"},\n\nThank you for submitting your application to the technical pipeline track. Our admissions team is assessing your engineering background and JLPT metrics. We will contact you soon.\n\n---\n\n${rawTargetName || "応募者"} 様\n\nこの度はテクニカルパイプラインへのご応募、誠にありがとうございました。選考担当チームにて、エンジニアリングのバックグラウンドおよびJLPT（日本語能力試験）の基準を確認しております。追って担当者よりご連絡いたします。${textFooter}`
+            : `Dear ${rawTargetName || "Partner"} Team,\n\nThank you for requesting architecture advisory options. A domain engineering specialist is validating your target pipeline criteria and will reach out shortly.\n\n---\n\n${rawTargetName || "ご担当者"} 様\n\nアーキテクチャアドバイザリーのご依頼、誠にありがとうございました。ドメインエンジニアリングの専門スタッフが、ご指定のパイプライン要件を確認しております。追って担当者よりご連絡いたします。${textFooter}`;
+
+        // Administrative metadata summary for the internal team
+        const adminHtmlBody = `
+            <div style="font-family: sans-serif; line-height: 1.6; color: #333;">
+                <h3>New Lead Alert [${isCandidate ? "CANDIDATE" : "CORPORATE"}]</h3>
+                <p><strong>ID:</strong> ${entryId}</p>
+                <p><strong>Timestamp:</strong> ${timestamp}</p>
+                <p><strong>Name/Company:</strong> ${safeTargetName}</p>
+                <p><strong>Email:</strong> ${escapeHtml(targetEmail)}</p>
+                <p><strong>Raw Payload JSON:</strong></p>
+                <pre style="background: #f4f4f4; padding: 10px; border-radius: 5px;">${escapeHtml(JSON.stringify(body, null, 2))}</pre>
+            </div>`;
+
+        const adminTextBody = `New Lead Alert [${isCandidate ? "CANDIDATE" : "CORPORATE"}]\nID: ${entryId}\nTimestamp: ${timestamp}\nName/Company: ${rawTargetName}\nEmail: ${targetEmail}\n\nPayload:\n${JSON.stringify(body, null, 2)}`;
+
+        // Command Packets Definition for SES
+        const sendToClient = new SendEmailCommand({
+            Destination: { ToAddresses: [targetEmail] },
+            Message: {
+                Subject: { Data: clientSubject, Charset: "UTF-8" },
+                Body: {
+                    Html: { Data: clientHtmlBody, Charset: "UTF-8" },
+                    Text: { Data: clientTextBody, Charset: "UTF-8" }
+                }
+            },
+            Source: FORMATTED_SOURCE,
+            ReplyToAddresses: [ADMIN_INBOX]
+        });
+
+        const sendToAdmin = new SendEmailCommand({
+            Destination: { ToAddresses: [ADMIN_INBOX] },
+            Message: {
+                Subject: { Data: `[SYSTEM-ALERT] ${clientSubject}`, Charset: "UTF-8" },
+                Body: {
+                    Html: { Data: adminHtmlBody, Charset: "UTF-8" },
+                    Text: { Data: adminTextBody, Charset: "UTF-8" }
+                }
+            },
+            Source: FORMATTED_SOURCE,
+            ReplyToAddresses: [targetEmail]
+        });
+
+        // Command Packet Definition for DynamoDB Persistence
+        const persistData = new PutCommand({
+            TableName: TABLE_NAME,
+            Item: {
+                id: entryId,
+                submissionType: isCandidate ? "Candidate" : "Corporate",
+                email: targetEmail,
+                name: rawTargetName || "Unknown",
+                payload: body,
+                timestamp: timestamp
+            }
+        });
+
+        // 1. Persist to DynamoDB first so lead data is guaranteed to be saved
+        await docClient.send(persistData);
+
+        // 2. Send emails independently so a client bounce never fails the API response
+        const emailResults = await Promise.allSettled([
+            ses.send(sendToClient),
+            ses.send(sendToAdmin)
+        ]);
+
+        emailResults.forEach((result, idx) => {
+            if (result.status === "rejected") {
+                console.error(`SES Send Warning (${idx === 0 ? "Client" : "Admin"}):`, result.reason);
+            }
+        });
+
+        return {
+            statusCode: 200,
+            headers: corsHeaders,
+            body: JSON.stringify({
+                message: "Inbound processing pipeline ingestion executed successfully.",
+                id: entryId
+            })
+        };
+
+    } catch (error) {
+        console.error("Critical Execution Fault Context:", error);
+        return {
+            statusCode: 500,
+            headers: corsHeaders,
+            body: JSON.stringify({ error: "System failed to process lead submission metadata." })
+        };
+    }
+};
