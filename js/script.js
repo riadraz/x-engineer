@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-  const LAMBDA_URL = 'https://gqns1d7wza.execute-api.us-east-1.amazonaws.com/prod/register';
+  const LAMBDA_URL = process.env.LAMBDA_URL;
 
   // --- FIELD LABEL MAPPINGS (per language) ---
   const fieldLabelMappingJa = {
@@ -40,6 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
       error: '送信に失敗しました。再度お試しください。',
       confirm: '確定して送信',
       loading: '読み込み中...',
+      captcha: 'CAPTCHA認証を完了してください。',
     },
     en: {
       required: 'Please fill in all required fields.',
@@ -48,6 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
       error: 'Submission failed. Please try again.',
       confirm: 'Confirm & Submit',
       loading: 'Loading...',
+      captcha: 'Please complete the CAPTCHA verification.',
     },
   };
 
@@ -65,6 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const reviewBackBtn = document.getElementById(`review-back-btn${suffix}`);
 
     let currentActiveFormId = null;
+    let currentRecaptchaToken = null;
     const labels = lang === 'en' ? fieldLabelMappingEn : fieldLabelMappingJa;
     const msg = i18n[lang];
 
@@ -91,6 +94,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (!form.checkValidity()) {
         errorEl.textContent = msg.required;
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      // Verify reCAPTCHA
+      const recaptchaDiv = form.querySelector('[data-recaptcha-container]');
+      const widgetIdAttr = recaptchaDiv?.getAttribute('data-widget-id');
+      const widgetId = widgetIdAttr ? parseInt(widgetIdAttr, 10) : NaN;
+      currentRecaptchaToken = (!isNaN(widgetId) && typeof grecaptcha !== 'undefined')
+        ? grecaptcha.getResponse(widgetId)
+        : '';
+      if (!currentRecaptchaToken) {
+        errorEl.textContent = msg.captcha;
         errorEl.classList.remove('hidden');
         return;
       }
@@ -134,6 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const payload = isCandidate
         ? { fullName: data.candidate_name, email: data.candidate_email, contact: data.candidate_contact, jlptLevel: data.jlpt_level, awsExperience: data.aws_exp, githubUrl: data.github_url }
         : { companyName: data.company_name, email: data.company_email, contact: data.company_contact, sector: data.company_sector, projectRequirements: data.project_requirements };
+      payload.recaptchaToken = currentRecaptchaToken;
 
       reviewConfirmBtn.disabled = true;
       reviewConfirmBtn.textContent = msg.sending;
@@ -147,6 +164,12 @@ document.addEventListener('DOMContentLoaded', () => {
         reviewContentDump.innerHTML = `<p style="color:#16a34a;font-weight:600">${msg.success}</p>`;
         reviewConfirmBtn.closest('.form-action-row').classList.add('hidden');
         form.reset();
+        // Reset reCAPTCHA widget
+        const recaptchaDiv = form.querySelector('[data-recaptcha-container]');
+        const resetWidgetIdAttr = recaptchaDiv?.getAttribute('data-widget-id');
+        if (resetWidgetIdAttr && typeof grecaptcha !== 'undefined') {
+          grecaptcha.reset(parseInt(resetWidgetIdAttr, 10));
+        }
       } catch (err) {
         console.error('Lambda submit error:', err);
         reviewContentDump.insertAdjacentHTML('beforeend', `<p style="color:#ef4444">${msg.error}</p>`);

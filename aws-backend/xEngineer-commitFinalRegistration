@@ -41,6 +41,49 @@ export const handler = async (event) => {
             };
         }
 
+        // --- reCAPTCHA Server-Side Verification ---
+        const recaptchaToken = body.recaptchaToken;
+        if (!recaptchaToken) {
+            return {
+                statusCode: 403,
+                headers: corsHeaders,
+                body: JSON.stringify({ error: "CAPTCHA verification required." })
+            };
+        }
+
+        const RECAPTCHA_SECRET_KEY = process.env.RECAPTCHA_SECRET_KEY;
+        if (!RECAPTCHA_SECRET_KEY) {
+            console.error("RECAPTCHA_SECRET_KEY environment variable is not set on Lambda.");
+            return {
+                statusCode: 500,
+                headers: corsHeaders,
+                body: JSON.stringify({ error: "Server configuration error." })
+            };
+        }
+
+        try {
+            const verifyRes = await fetch("https://www.google.com/recaptcha/api/siteverify", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: `secret=${encodeURIComponent(RECAPTCHA_SECRET_KEY)}&response=${encodeURIComponent(recaptchaToken)}`
+            });
+            const verifyData = await verifyRes.json();
+            if (!verifyData.success) {
+                return {
+                    statusCode: 403,
+                    headers: corsHeaders,
+                    body: JSON.stringify({ error: "CAPTCHA verification failed." })
+                };
+            }
+        } catch (verifyErr) {
+            console.error("reCAPTCHA verification error:", verifyErr);
+            return {
+                statusCode: 500,
+                headers: corsHeaders,
+                body: JSON.stringify({ error: "CAPTCHA verification service unavailable." })
+            };
+        }
+
         // Configuration Values
         const VERIFIED_SOURCE_EMAIL = process.env.VERIFIED_SOURCE_EMAIL || "mmcldint@mail.moses20608.click";
         const SENDER_DISPLAY_NAME = process.env.SENDER_DISPLAY_NAME || "MM Digital Engagement";
@@ -56,7 +99,7 @@ export const handler = async (event) => {
         const htmlFooter = `
             <div style="margin-top: 28px; padding-top: 14px; border-top: 1px solid #eee; font-size: 12px; color: #777;">
                 <p style="margin: 0;"><strong>MM Digital Engagement Inc.</strong> | Osaka, Japan</p>
-                <p style="margin: 4px 0 0;">Web: <a href="https://x-engineer.moses20608.click" style="color: #555;">https://moses20608.click</a></p>
+                <p style="margin: 4px 0 0;">Web: <a href="https://x-engineer.moses20608.click" style="color: #555;">https://x-engineer.moses20608.click</a></p>
                 <p style="margin: 4px 0 0;">Reference ID: ${entryId}</p>
             </div>`;
 

@@ -12,6 +12,19 @@
   <!-- Highlight.js -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <!-- reCAPTCHA v2 -->
+  <script>
+    window.onRecaptchaLoad = function () {
+      var siteKey = '6LcUgi4uAAAAABHATqchymqwxcdB9I3ufBP7i2SU';
+      document.querySelectorAll('[data-recaptcha-container]').forEach(function (el) {
+        if (!el.hasAttribute('data-widget-id')) {
+          var widgetId = grecaptcha.render(el, { sitekey: siteKey });
+          el.setAttribute('data-widget-id', widgetId);
+        }
+      });
+    };
+  </script>
+  <script src="https://www.google.com/recaptcha/api.js?render=explicit&onload=onRecaptchaLoad" async defer></script>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/custom-style.css">
 </head>
@@ -178,6 +191,10 @@
                 <input type="url" name="github_url" required placeholder="https://github.com">
               </div>
 
+              <div class="form-group">
+                <div data-recaptcha-container></div>
+              </div>
+
               <!-- Inline Error Alert Message Area -->
               <div id="candidate-error-msg" class="form-validation-alert hidden"></div>
 
@@ -209,6 +226,10 @@
               <div class="form-group">
                 <label>ご相談内容 / プロジェクト要件</label>
                 <textarea name="project_requirements" required placeholder="プロジェクトの規模や技術スタックの要件をご記載ください。"></textarea>
+              </div>
+
+              <div class="form-group">
+                <div data-recaptcha-container></div>
               </div>
 
               <div id="corporate-error-msg" class="form-validation-alert hidden"></div>
@@ -434,6 +455,10 @@
               </div>
 
               <!-- Inline Error Alert Message Area -->
+              <div class="form-group">
+                <div data-recaptcha-container></div>
+              </div>
+
               <div id="candidate-error-msg-en" class="form-validation-alert hidden"></div>
 
               <div class="form-action-row">
@@ -464,6 +489,10 @@
               <div class="form-group">
                 <label>Inquiry / Project Requirements</label>
                 <textarea name="project_requirements" required placeholder="Please describe the project scope and tech stack requirements."></textarea>
+              </div>
+
+              <div class="form-group">
+                <div data-recaptcha-container></div>
               </div>
 
               <div id="corporate-error-msg-en" class="form-validation-alert hidden"></div>
