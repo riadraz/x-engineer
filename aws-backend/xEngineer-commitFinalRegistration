@@ -84,6 +84,9 @@ export const handler = async (event) => {
             };
         }
 
+        // Token verified — strip it from the body so it's never persisted or emailed
+        delete body.recaptchaToken;
+
         // Configuration Values
         const VERIFIED_SOURCE_EMAIL = process.env.VERIFIED_SOURCE_EMAIL || "mmcldint@mail.moses20608.click";
         const SENDER_DISPLAY_NAME = process.env.SENDER_DISPLAY_NAME || "MM Digital Engagement";
