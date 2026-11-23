@@ -72,4 +72,5 @@ function addCopyButtons() {
 }
 
 // Initialize
-window.onload = createTabs;
+// Tab creation is now handled by js/script.js for both JA and EN language sets.
+// window.onload = createTabs;

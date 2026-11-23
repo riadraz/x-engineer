@@ -1,16 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-  // --- FORM TAB SWITCHING ---
   const LAMBDA_URL = 'https://gqns1d7wza.execute-api.us-east-1.amazonaws.com/prod/register';
 
-  const formTabBtns = document.querySelectorAll('.card-hub-header .form-tab-btn[data-form]');
-  const candidatePane = document.getElementById('candidate-form-pane');
-  const corporatePane = document.getElementById('corporate-form-pane');
-  const reviewPane = document.getElementById('form-review-pane');
-
-  let currentActiveFormId = null;
-
-  const fieldLabelMapping = {
+  // --- FIELD LABEL MAPPINGS (per language) ---
+  const fieldLabelMappingJa = {
     candidate_name: 'フルネーム',
     candidate_email: 'メールアドレス',
     candidate_contact: '電話番号 & メッセンジャー',
@@ -24,93 +17,147 @@ document.addEventListener('DOMContentLoaded', () => {
     project_requirements: 'ご相談内容',
   };
 
-  function showPane(pane) {
-    [candidatePane, corporatePane, reviewPane].forEach(p => p.classList.add('hidden'));
-    pane.classList.remove('hidden');
-  }
+  const fieldLabelMappingEn = {
+    candidate_name: 'Full Name',
+    candidate_email: 'Email Address',
+    candidate_contact: 'Phone & Messenger',
+    jlpt_level: 'JLPT Level',
+    aws_exp: 'AWS Knowledge / Experience',
+    github_url: 'GitHub URL',
+    company_name: 'Company Name',
+    company_email: 'Business Email',
+    company_contact: 'Contact Person',
+    company_sector: 'Target Sector',
+    project_requirements: 'Inquiry / Project Requirements',
+  };
 
-  formTabBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const formId = btn.getAttribute('data-form');
-      if (!formId) return;
-      document.querySelector('.form-tab-btn.active')?.classList.remove('active');
-      btn.classList.add('active');
-      showPane(formId === 'candidate-form' ? candidatePane : corporatePane);
-    });
-  });
+  // --- BILINGUAL STRINGS ---
+  const i18n = {
+    ja: {
+      required: '必須項目をすべて入力してください。',
+      sending: '送信中...',
+      success: '✅ 送信が完了しました。ありがとうございます。',
+      error: '送信に失敗しました。再度お試しください。',
+      confirm: '確定して送信',
+      loading: '読み込み中...',
+    },
+    en: {
+      required: 'Please fill in all required fields.',
+      sending: 'Sending...',
+      success: '✅ Submission complete. Thank you.',
+      error: 'Submission failed. Please try again.',
+      confirm: 'Confirm & Submit',
+      loading: 'Loading...',
+    },
+  };
 
-  // --- FORM SUBMIT → REVIEW PANE ---
-  function executeFormReviewRouting(formId) {
-    const form = document.getElementById(formId);
-    const formPrefix = formId.replace('-form', '');
-    const errorEl = document.getElementById(`${formPrefix}-error-msg`);
-    errorEl.classList.add('hidden');
+  // --- FORM SET SETUP (called once per language) ---
+  function setupFormSet(lang) {
+    const suffix = lang === 'en' ? '-en' : '';
+    const scope = lang === 'en' ? '#post-en' : '#post-ja';
 
-    if (!form.checkValidity()) {
-      errorEl.textContent = '必須項目をすべて入力してください。';
-      errorEl.classList.remove('hidden');
-      return;
+    const formTabBtns = document.querySelectorAll(`${scope} .form-tab-btn[data-form]`);
+    const candidatePane = document.getElementById(`candidate-form-pane${suffix}`);
+    const corporatePane = document.getElementById(`corporate-form-pane${suffix}`);
+    const reviewPane = document.getElementById(`form-review-pane${suffix}`);
+    const reviewContentDump = document.getElementById(`review-content-dump${suffix}`);
+    const reviewConfirmBtn = document.getElementById(`review-confirm-btn${suffix}`);
+    const reviewBackBtn = document.getElementById(`review-back-btn${suffix}`);
+
+    let currentActiveFormId = null;
+    const labels = lang === 'en' ? fieldLabelMappingEn : fieldLabelMappingJa;
+    const msg = i18n[lang];
+
+    function showPane(pane) {
+      [candidatePane, corporatePane, reviewPane].forEach(p => p.classList.add('hidden'));
+      pane.classList.remove('hidden');
     }
 
-    currentActiveFormId = formId;
-    const data = Object.fromEntries(new FormData(form));
-    // Collect radio values (FormData only gets checked ones)
-    form.querySelectorAll('input[type="radio"]:checked').forEach(r => { data[r.name] = r.value; });
-
-    const reviewHTML = Object.entries(data)
-      .map(([k, v]) => `<div class="review-row"><span class="review-label">${fieldLabelMapping[k] || k}</span><span class="review-value">${v}</span></div>`)
-      .join('');
-    document.getElementById('review-confirm-btn').closest('.form-action-row').classList.remove('hidden');
-    document.getElementById('review-content-dump').innerHTML = reviewHTML;
-    showPane(reviewPane);
-  }
-
-  document.getElementById('candidate-form').addEventListener('submit', e => {
-    e.preventDefault();
-    executeFormReviewRouting('candidate-form');
-  });
-
-  document.getElementById('corporate-form').addEventListener('submit', e => {
-    e.preventDefault();
-    executeFormReviewRouting('corporate-form');
-  });
-
-  // --- REVIEW PANE ACTIONS ---
-  document.getElementById('review-back-btn').addEventListener('click', () => {
-    showPane(currentActiveFormId === 'candidate-form' ? candidatePane : corporatePane);
-  });
-
-  document.getElementById('review-confirm-btn').addEventListener('click', async () => {
-    const form = document.getElementById(currentActiveFormId);
-    const confirmBtn = document.getElementById('review-confirm-btn');
-    const data = Object.fromEntries(new FormData(form));
-    form.querySelectorAll('input[type="radio"]:checked').forEach(r => { data[r.name] = r.value; });
-    data.form_type = currentActiveFormId;
-
-    // Remap field names to match Lambda's expected payload shape
-    const payload = currentActiveFormId === 'candidate-form'
-      ? { fullName: data.candidate_name, email: data.candidate_email, contact: data.candidate_contact, jlptLevel: data.jlpt_level, awsExperience: data.aws_exp, githubUrl: data.github_url }
-      : { companyName: data.company_name, email: data.company_email, contact: data.company_contact, sector: data.company_sector, projectRequirements: data.project_requirements };
-
-    confirmBtn.disabled = true;
-    confirmBtn.textContent = '送信中...';
-    try {
-      const res = await fetch(LAMBDA_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+    formTabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const formId = btn.getAttribute('data-form');
+        if (!formId) return;
+        document.querySelectorAll(`${scope} .form-tab-btn.active`).forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        showPane(formId.includes('candidate') ? candidatePane : corporatePane);
       });
-      if (!res.ok) throw new Error(res.status);
-    document.getElementById('review-content-dump').innerHTML = '<p style="color:#16a34a;font-weight:600">✅ 送信が完了しました。ありがとうございます。</p>';
-      document.getElementById('review-confirm-btn').closest('.form-action-row').classList.add('hidden');
-      form.reset();
-    } catch (err) {
-      console.error('Lambda submit error:', err);
-      document.getElementById('review-content-dump').insertAdjacentHTML('beforeend', '<p style="color:#ef4444">送信に失敗しました。再度お試しください。</p>');
-      confirmBtn.disabled = false;
-      confirmBtn.textContent = '確定して送信';
+    });
+
+    function executeFormReviewRouting(formId) {
+      const form = document.getElementById(formId);
+      const formPrefix = formId.replace(`-form${suffix}`, '');
+      const errorEl = document.getElementById(`${formPrefix}-error-msg${suffix}`);
+      errorEl.classList.add('hidden');
+
+      if (!form.checkValidity()) {
+        errorEl.textContent = msg.required;
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      currentActiveFormId = formId;
+      const data = Object.fromEntries(new FormData(form));
+      form.querySelectorAll('input[type="radio"]:checked').forEach(r => { data[r.name] = r.value; });
+
+      const reviewHTML = Object.entries(data)
+        .map(([k, v]) => `<div class="review-row"><span class="review-label">${labels[k] || k}</span><span class="review-value">${v}</span></div>`)
+        .join('');
+      reviewConfirmBtn.closest('.form-action-row').classList.remove('hidden');
+      reviewContentDump.innerHTML = reviewHTML;
+      showPane(reviewPane);
     }
-  });
+
+    const candidateFormId = `candidate-form${suffix}`;
+    const corporateFormId = `corporate-form${suffix}`;
+
+    document.getElementById(candidateFormId).addEventListener('submit', e => {
+      e.preventDefault();
+      executeFormReviewRouting(candidateFormId);
+    });
+
+    document.getElementById(corporateFormId).addEventListener('submit', e => {
+      e.preventDefault();
+      executeFormReviewRouting(corporateFormId);
+    });
+
+    reviewBackBtn.addEventListener('click', () => {
+      showPane(currentActiveFormId.includes('candidate') ? candidatePane : corporatePane);
+    });
+
+    reviewConfirmBtn.addEventListener('click', async () => {
+      const form = document.getElementById(currentActiveFormId);
+      const data = Object.fromEntries(new FormData(form));
+      form.querySelectorAll('input[type="radio"]:checked').forEach(r => { data[r.name] = r.value; });
+      data.form_type = currentActiveFormId;
+
+      const isCandidate = currentActiveFormId.includes('candidate');
+      const payload = isCandidate
+        ? { fullName: data.candidate_name, email: data.candidate_email, contact: data.candidate_contact, jlptLevel: data.jlpt_level, awsExperience: data.aws_exp, githubUrl: data.github_url }
+        : { companyName: data.company_name, email: data.company_email, contact: data.company_contact, sector: data.company_sector, projectRequirements: data.project_requirements };
+
+      reviewConfirmBtn.disabled = true;
+      reviewConfirmBtn.textContent = msg.sending;
+      try {
+        const res = await fetch(LAMBDA_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) throw new Error(res.status);
+        reviewContentDump.innerHTML = `<p style="color:#16a34a;font-weight:600">${msg.success}</p>`;
+        reviewConfirmBtn.closest('.form-action-row').classList.add('hidden');
+        form.reset();
+      } catch (err) {
+        console.error('Lambda submit error:', err);
+        reviewContentDump.insertAdjacentHTML('beforeend', `<p style="color:#ef4444">${msg.error}</p>`);
+        reviewConfirmBtn.disabled = false;
+        reviewConfirmBtn.textContent = msg.confirm;
+      }
+    });
+  }
+
+  setupFormSet('ja');
+  setupFormSet('en');
 
   // --- LANGUAGE SWITCHER ---
   const langButtons = document.querySelectorAll('.lang-btn');
@@ -118,6 +165,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const postJa = document.getElementById('post-ja');
   const heroDescEn = document.getElementById('hero-desc-en');
   const heroDescJa = document.getElementById('hero-desc-ja');
+  const heroTitleEn = document.getElementById('hero-title-en');
+  const heroTitleJa = document.getElementById('hero-title-ja');
 
   langButtons.forEach(button => {
     button.addEventListener('click', () => {
@@ -130,54 +179,80 @@ document.addEventListener('DOMContentLoaded', () => {
       postJa.classList.toggle('hidden', isEn);
       heroDescEn.classList.toggle('hidden', !isEn);
       heroDescJa.classList.toggle('hidden', isEn);
+      heroTitleEn.classList.toggle('hidden', !isEn);
+      heroTitleJa.classList.toggle('hidden', isEn);
     });
   });
 
-  // --- DOCUMENTATION HUB ---
-  const tabsContainer = document.getElementById('tabs');
-  const contentArea = document.getElementById('content');
+  // --- DOCUMENTATION HUB (called once per language) ---
+  function setupDocHub(lang) {
+    const suffix = lang === 'en' ? '-en' : '';
+    const tabsContainer = document.getElementById(`tabs${suffix}`);
+    const contentArea = document.getElementById(`content${suffix}`);
+    const msg = i18n[lang];
 
-  async function renderDocument(filePath) {
-    contentArea.innerHTML = '<p style="color:#94a3b8">読み込み中...</p>';
-    try {
-      const res = await fetch(filePath);
-      if (!res.ok) throw new Error(res.status);
-      const raw = await res.text();
-      const md = raw.replace(/^---[\s\S]*?---\n?/, '');
-      contentArea.innerHTML = marked.parse(md);
-      contentArea.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block));
-    } catch (err) {
-      console.error('Doc load error:', err);
-      contentArea.innerHTML = `<p style="color:#ef4444">Failed to load <code>${filePath}</code></p>`;
+    if (!tabsContainer || !contentArea) return;
+
+    async function renderDocument(filePath) {
+      contentArea.innerHTML = `<p style="color:#94a3b8">${msg.loading}</p>`;
+      try {
+        const res = await fetch(filePath);
+        if (!res.ok) throw new Error(res.status);
+        const raw = await res.text();
+        const md = raw.replace(/^---[\s\S]*?---\n?/, '');
+        contentArea.innerHTML = marked.parse(md);
+        contentArea.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block));
+        addCopyButtons(contentArea);
+      } catch (err) {
+        console.error('Doc load error:', err);
+        contentArea.innerHTML = `<p style="color:#ef4444">Failed to load <code>${filePath}</code></p>`;
+      }
     }
-  }
 
-  function setActiveTab(activeBtn) {
-    tabsContainer.querySelectorAll('.doc-tab-btn').forEach(b => b.classList.remove('active'));
-    activeBtn.classList.add('active');
-  }
+    function setActiveTab(activeBtn) {
+      tabsContainer.querySelectorAll('.doc-tab-btn').forEach(b => b.classList.remove('active'));
+      activeBtn.classList.add('active');
+    }
 
-  // Build tabs from manifest.json
-  fetch('docs/manifest.json')
-    .then(res => res.json())
-    .then(docs => {
-      docs.forEach((doc, i) => {
-        const btn = document.createElement('button');
-        btn.className = 'doc-tab-btn' + (i === 0 ? ' active' : '');
-        btn.textContent = doc.title;
-        btn.addEventListener('click', () => {
-          setActiveTab(btn);
-          // Clear dropdown selection when a tab is clicked
-          const dropdown = document.getElementById('doc-extra-select');
-          if (dropdown) dropdown.value = '';
-          renderDocument(doc.file);
+    fetch('docs/manifest.json')
+      .then(res => res.json())
+      .then(docs => {
+        const filtered = docs.filter(doc => doc.id.endsWith(`-${lang}`));
+        filtered.forEach((doc, i) => {
+          const btn = document.createElement('button');
+          btn.className = 'doc-tab-btn' + (i === 0 ? ' active' : '');
+          btn.textContent = doc.title;
+          btn.addEventListener('click', () => {
+            setActiveTab(btn);
+            renderDocument(doc.file);
+          });
+          tabsContainer.appendChild(btn);
         });
-        tabsContainer.appendChild(btn);
-      });
+        if (filtered.length) renderDocument(filtered[0].file);
+      })
+      .catch(err => console.error('Manifest load error:', err));
+  }
 
-      // Load first doc by default
-      if (docs.length) renderDocument(docs[0].file);
-    })
-    .catch(err => console.error('Manifest load error:', err));
+  setupDocHub('ja');
+  setupDocHub('en');
+
+  // --- COPY BUTTONS ---
+  function addCopyButtons(scope) {
+    scope.querySelectorAll('pre').forEach(pre => {
+      if (pre.querySelector('.copy-btn')) return;
+      const btn = document.createElement('button');
+      btn.className = 'copy-btn';
+      btn.textContent = 'Copy';
+      btn.addEventListener('click', () => {
+        const code = pre.querySelector('code')?.innerText || '';
+        navigator.clipboard.writeText(code).then(() => {
+          btn.textContent = 'Copied!';
+          btn.classList.add('copied');
+          setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+        });
+      });
+      pre.appendChild(btn);
+    });
+  }
 
 });

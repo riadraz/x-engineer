@@ -44,7 +44,8 @@
 
     <!-- HERO SECTION (Directly under the menu bar) -->
     <section class="hero-section">
-      <h1 class="hero-title">「AWS × PMO × 運用設計 × 業務知識」</h1>
+      <h1 id="hero-title-ja" class="hero-title">「AWS × PMO × 運用設計 × 業務知識」</h1>
+      <h1 id="hero-title-en" class="hero-title hidden">AWS × PMO × Operations Design × Business Knowledge</h1>
       
       <!-- Japanese Hero Subtext (Default visible) -->
       <p id="hero-desc-ja" class="hero-description lang-toggle-text">
@@ -321,29 +322,256 @@
     <div id="post-en" class="lang-group hidden" lang="en">
       <!-- SECTION 1: TOP 4 HORIZONTAL CONTAINER -->
       <section class="grid-top-four">
-        <div class="grid-card"><!-- [EN] PUT YOUR CONTENTS HERE (Card 1) --></div>
-        <div class="grid-card"><!-- [EN] PUT YOUR CONTENTS HERE (Card 2) --></div>
-        <div class="grid-card"><!-- [EN] PUT YOUR CONTENTS HERE (Card 3) --></div>
-        <div class="grid-card"><!-- [EN] PUT YOUR CONTENTS HERE (Card 4) --></div>
+        <!-- CARD 1: CANDIDATE ROADMAP & SETUP INFO -->
+        <div class="grid-card text-rich-card">
+          <h2 class="card-main-title">Candidates:</h2>
+
+          <div class="card-sub-section">
+            <h3 class="card-accent-label">Career Promise</h3>
+            <p class="card-body-text">A 3–5 year roadmap from hybrid talent / JLPT N2 level to full-stack SE, PM, or CTO.</p>
+          </div>
+
+          <div class="card-sub-section">
+            <h3 class="card-accent-label">Bootcamp Metrics / Japanese Language Training</h3>
+            <p class="card-body-text"><span class="highlight-badge">4 months</span> 700–800 hours of intensive AWS cloud-ready training.</p>
+          </div>
+
+          <div class="card-sub-section border-top-dash">
+            <h3 class="card-accent-label warning-color">Remote Setup Required</h3>
+            <p class="card-body-text">High-speed internet infrastructure, home tech setup, corporate cloud payment card.</p>
+          </div>
+        </div>
+
+        <!-- CARD 2: ARCHITECTURE & FRAMEWORKS -->
+        <div class="grid-card text-rich-card">
+          <h2 class="card-main-title">Solutions:</h2>
+
+          <div class="card-sub-section">
+            <h3 class="card-accent-label">Architecture First</h3>
+            <p class="card-body-text">Advanced domain data engineering (pipelines, TLS, RAG, agentic AI) forming the foundation for AI/ML adoption.</p>
+          </div>
+
+          <div class="card-sub-section">
+            <h3 class="card-accent-label">Multi-Cloud Grid &amp; Virtual Office Core</h3>
+            <p class="card-body-text">Native pipeline integration with SAP, ERP, CRM, XaaS, and demand forecasting.</p>
+          </div>
+
+          <div class="card-sub-section border-top-dash">
+            <h3 class="card-accent-label">Operational Strategy &amp; Delivery Framework</h3>
+            <p class="card-body-text">Production-ready workloads transparently managed by advanced tooling.</p>
+          </div>
+        </div>
+
+        <!-- CARD 3: CORE CAPABILITIES -->
+        <div class="grid-card text-rich-card">
+          <h2 class="card-main-title">Core Capabilities:</h2>
+
+          <div class="card-sub-section">
+            <h3 class="card-accent-label">Governance &amp; Security</h3>
+            <p class="card-body-text">Cloud IAM, security, FinOps, audit &amp; controls, and disaster recovery / business continuity planning.</p>
+          </div>
+
+          <div class="card-sub-section">
+            <h3 class="card-accent-label">Core Engineering</h3>
+            <p class="card-body-text">Platform engineering, cloud migration, data infrastructure, AI/MLOps.</p>
+          </div>
+
+          <div class="card-sub-section border-top-dash">
+            <h3 class="card-accent-label">Operations Management</h3>
+            <p class="card-body-text">Advanced monitoring, continuous optimization, and managed operations.</p>
+          </div>
+        </div>
+
+        <!-- CARD 4: INTERACTIVE FORMS HUBCARD -->
+        <div class="grid-card text-rich-card unified-form-card">
+
+          <!-- Inner Navigation Tabs -->
+          <div class="card-hub-header padding-bottom-none">
+            <nav class="doc-tab-menu">
+              <button type="button" class="form-tab-btn active" data-form="candidate-form-en">Candidate Entry</button>
+              <button type="button" class="form-tab-btn" data-form="corporate-form-en">Corporate Client</button>
+            </nav>
+          </div>
+
+          <!-- FORM PANE 1: CANDIDATE REGISTRATION -->
+          <div id="candidate-form-pane-en" class="form-display-pane">
+            <form id="candidate-form-en" class="custom-hub-form" novalidate>
+              <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" name="candidate_name" required placeholder="John Smith">
+              </div>
+              <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" name="candidate_email" required placeholder="name@example.com">
+              </div>
+              <div class="form-group">
+                <label>Phone &amp; Messenger Account</label>
+                <input type="text" name="candidate_contact" required placeholder="090-0000-0000 / Slack: @name">
+              </div>
+
+              <!-- Radio Grid System -->
+              <div class="form-group">
+                <label>JLPT Level</label>
+                <div class="radio-flex-row">
+                  <label class="radio-item"><input type="radio" name="jlpt_level" value="N1" required> N1</label>
+                  <label class="radio-item"><input type="radio" name="jlpt_level" value="N2"> N2</label>
+                  <label class="radio-item"><input type="radio" name="jlpt_level" value="N3"> N3</label>
+                  <label class="radio-item"><input type="radio" name="jlpt_level" value="None"> None</label>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>AWS Knowledge / Experience</label>
+                <div class="radio-flex-row">
+                  <label class="radio-item"><input type="radio" name="aws_exp" value="Yes" required> Yes</label>
+                  <label class="radio-item"><input type="radio" name="aws_exp" value="No"> No</label>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>GitHub Profile URL</label>
+                <input type="url" name="github_url" required placeholder="https://github.com">
+              </div>
+
+              <!-- Inline Error Alert Message Area -->
+              <div id="candidate-error-msg-en" class="form-validation-alert hidden"></div>
+
+              <div class="form-action-row">
+                <button type="submit" class="form-submit-btn">Submit</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- FORM PANE 2: CORPORATE INQUIRIES -->
+          <div id="corporate-form-pane-en" class="form-display-pane hidden">
+            <form id="corporate-form-en" class="custom-hub-form" novalidate>
+              <div class="form-group">
+                <label>Company Name</label>
+                <input type="text" name="company_name" required placeholder="Tech Corp Inc.">
+              </div>
+              <div class="form-group">
+                <label>Business Email</label>
+                <input type="email" name="company_email" required placeholder="corp@company.com">
+              </div>
+              <div class="form-group">
+                <label>Contact Phone &amp; Account</label>
+                <input type="text" name="company_contact" required placeholder="03-0000-0000 / Teams: @name">
+              </div>
+              <div class="form-group">
+                <label>Target Sector</label>
+                <input type="text" name="company_sector" required placeholder="Data Engineering / FinTech">
+              </div>
+              <div class="form-group">
+                <label>Inquiry / Project Requirements</label>
+                <textarea name="project_requirements" required placeholder="Please describe the project scope and tech stack requirements."></textarea>
+              </div>
+
+              <div id="corporate-error-msg-en" class="form-validation-alert hidden"></div>
+
+              <div class="form-action-row">
+                <button type="submit" class="form-submit-btn">Submit</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- REVIEW SUMMARY PANE -->
+          <div id="form-review-pane-en" class="form-display-pane hidden">
+            <h3 class="review-title">Review Your Details</h3>
+            <div id="review-content-dump-en" class="review-data-wrapper"></div>
+            <div class="form-action-row margin-top-md">
+              <button type="button" id="review-back-btn-en" class="form-tab-btn">Edit</button>
+              <button type="button" id="review-confirm-btn-en" class="form-submit-btn">Confirm &amp; Submit</button>
+            </div>
+          </div>
+
+        </div>
+
       </section>
 
-      <!-- SECTION 2: MIDDLE 3 VERTICAL CONTAINER -->
-      <section class="grid-middle-three">
-        <div class="grid-card vertical-mode"><!-- [EN] PUT YOUR CONTENTS HERE (Card 1) --></div>
-        <div class="grid-card vertical-mode"><!-- [EN] PUT YOUR CONTENTS HERE (Card 2) --></div>
-        <div class="grid-card vertical-mode"><!-- [EN] PUT YOUR CONTENTS HERE (Card 3) --></div>
+      <!-- SECTION 2: MIDDLE DOCUMENTATION HUB -->
+      <section class="grid-middle-three-unified">
+
+        <!-- SINGLE UNIFIED HUBCARD -->
+        <div class="grid-card unified-doc-card">
+
+          <!-- Unified Header containing Inner Title & Document Tab Links -->
+          <div class="card-hub-header">
+            <div class="hub-title-block">
+              <h2 class="card-main-title">Technical Documentation</h2>
+              <p class="card-body-text">Verified cloud design frameworks</p>
+            </div>
+          </div>
+
+          <div class="tabs-container" id="tabs-en"></div>
+
+          <div id="content-en" class="markdown-body prose prose-blue mt-8"></div>
+
+          <!-- Unified Footer Asset -->
+          <div class="card-hub-footer">
+            <span class="highlight-badge">Production v2.6.0</span>
+          </div>
+
+        </div>
+
       </section>
 
       <!-- SECTION 3: BOTTOM 1 HORIZONTAL CONTAINER -->
       <section class="grid-bottom-one">
-        <div class="grid-card horizontal-full"><!-- [EN] PUT YOUR CONTENTS HERE (Full-Width Card) --></div>
+        <div class="grid-card horizontal-full">
+          <!-- Global Footer Container Area -->
+  <footer class="blog-footer-global">
+    <div class="footer-wrapper">
+
+      <!-- Column 1: Corporate Profile Summary -->
+      <div class="footer-col brand-col">
+        <div class="footer-logo">X-Engineers / Company</div>
+        <p class="footer-desc">
+          An IT solutions and talent introduction partner specializing in data engineering and XOps, connecting global technical talent with Japanese enterprises.
+          See our
+          <a href="https://github.com/riadraz/x-engineer" class="footer-link" target="_blank" rel="noopener noreferrer">GitHub</a>,
+          <a href="https://qiita.com/riadraz" class="footer-link" target="_blank" rel="noopener noreferrer">Qiita</a>,
+          <a href="https://zenn.dev/riadraz" class="footer-link" target="_blank" rel="noopener noreferrer">Zenn</a>.
+        </p>
+      </div>
+
+      <!-- Column 2: Licensing and Accreditations -->
+      <div class="footer-col compliance-col">
+        <h3 class="footer-section-title">Licenses &amp; Operations</h3>
+        <p class="footer-legal-text">Minister of Health, Labour and Welfare License No.</p>
+        <p class="footer-permit-number">Paid Employment Placement: 13-ユ-XXXXXX</p>
+        <p class="footer-permit-number">Staffing Business: 派13-XXXXXX</p>
+      </div>
+
+      <!-- Column 3: Quick Navigation References -->
+      <div class="footer-col links-col">
+        <h3 class="footer-section-title">Company Info</h3>
+        <nav class="footer-nav">
+          <a href="#company" class="footer-link">Company Overview</a>
+          <a href="#privacy" class="footer-link">Privacy Policy</a>
+          <a href="#terms" class="footer-link">Information Security Policy</a>
+          <a href="#compliance" class="footer-link">Compliance Regulations</a>
+        </nav>
+      </div>
+
+    </div>
+
+    <!-- Bottom Attribution Area -->
+    <div class="footer-bottom">
+      <div class="footer-bottom-wrapper">
+        <p class="copyright-notice">&copy; 2026 X-Engineers, MM Digital Engagement Inc. All Rights Reserved.</p>
+        <p class="footer-sub-text">Unauthorized reproduction of all architecture and text on this site is prohibited.</p>
+      </div>
+    </div>
+  </footer>
+
+        </div>
       </section>
     </div>
 
   </main>
 
   <style>
-    #tabs {
+    #tabs, #tabs-en {
       display: grid !important;
       grid-template-columns: repeat(3, 1fr) !important;
       grid-auto-rows: auto !important;
