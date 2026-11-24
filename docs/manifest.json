@@ -8,6 +8,15 @@
     "id": "aws-iot-ggv2-ja",
     "title": "Aws iot 日本語版",
     "file": "docs/aws-iot-ggv2-202608-ja.md"
+  },
+  {
+    "id": "x-engineer-arch-en",
+    "title": "X-Engineer Architecture (EN)",
+    "file": "docs/x-engineer-architecture-en.md"
+  },
+  {
+    "id": "x-engineer-arch-ja",
+    "title": "X-Engineer アーキテクチャ (JA)",
+    "file": "docs/x-engineer-architecture-ja.md"
   }
-
 ]

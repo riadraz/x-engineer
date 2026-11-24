@@ -106,7 +106,7 @@ export const handler = async (event) => {
                 <p style="margin: 4px 0 0;">Reference ID: ${entryId}</p>
             </div>`;
 
-        const textFooter = `\n\n----------------------------------------\nMM Digital Engagement Inc. | Osaka, Japan\nWeb: https://moses20608.click\nReference ID: ${entryId}`;
+        const textFooter = `\n\n----------------------------------------\nMM Digital Engagement Inc. | Osaka, Japan\nWeb: https://x-engineer.moses20608.click\nReference ID: ${entryId}`;
 
         // Unified Bilingual Subject, HTML Body, and Plain-Text Body
         const clientSubject = isCandidate

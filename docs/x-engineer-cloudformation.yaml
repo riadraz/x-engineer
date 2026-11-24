@@ -1,0 +1,267 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  X-Engineer Registration Pipeline — API Gateway, Lambda, DynamoDB, SES, IAM.
+  Provisions the full serverless backend for the bilingual contact form.
+  Lambda handler code must be deployed separately via AWS Console or
+  aws lambda update-function-code.
+
+Parameters:
+  LambdaFunctionName:
+    Type: String
+    Default: xEngineer-commitFinalRegistration
+    Description: Name of the Lambda function that processes form submissions.
+
+  DynamoDBTableName:
+    Type: String
+    Default: LeadsAndApplications
+    Description: DynamoDB table for persisting form submissions.
+
+  VerifiedSourceEmail:
+    Type: String
+    Default: mmcldint@mail.moses20608.click
+    Description: SES-verified sender email address.
+
+  SenderDisplayName:
+    Type: String
+    Default: MM Digital Engagement
+    Description: Display name shown in the From header of outgoing emails.
+
+  AdminInbox:
+    Type: String
+    Default: riadraz@gmail.com
+    Description: Email address that receives admin lead notifications.
+
+  RecaptchaSecretKey:
+    Type: String
+    NoEcho: true
+    Description: Google reCAPTCHA v2 secret key for server-side token verification.
+
+  LambdaMemorySize:
+    Type: Number
+    Default: 256
+    MinValue: 128
+    MaxValue: 10240
+    Description: Memory (MB) allocated to the Lambda function.
+
+  LambdaTimeout:
+    Type: Number
+    Default: 15
+    MinValue: 1
+    MaxValue: 900
+    Description: Maximum execution time (seconds) for the Lambda function.
+
+  LogRetentionDays:
+    Type: Number
+    Default: 30
+    AllowedValues: [1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, 3653]
+    Description: CloudWatch log retention period in days.
+
+Resources:
+
+  # ─────────────────────────────────────────────
+  # DynamoDB Table
+  # ─────────────────────────────────────────────
+  LeadsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Ref DynamoDBTableName
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+
+  # ─────────────────────────────────────────────
+  # CloudWatch Log Group
+  # ─────────────────────────────────────────────
+  LambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${LambdaFunctionName}
+      RetentionInDays: !Ref LogRetentionDays
+
+  # ─────────────────────────────────────────────
+  # IAM Role — Lambda Execution
+  # ─────────────────────────────────────────────
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${LambdaFunctionName}-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        # DynamoDB: scoped to this table only
+        - PolicyName: DynamoDBWriteAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:PutItem
+                Resource: !GetAtt LeadsTable.Arn
+        # SES: send emails from the verified source
+        - PolicyName: SESSendAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ses:SendEmail
+                  - ses:SendRawEmail
+                Resource: '*'
+
+  # ─────────────────────────────────────────────
+  # Lambda Function
+  # ─────────────────────────────────────────────
+  # NOTE: The inline ZipFile is a placeholder.
+  # Deploy the actual handler via:
+  #   aws lambda update-function-code --function-name <name> --zip-file fileb://function.zip
+  RegistrationLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Ref LambdaFunctionName
+      Runtime: nodejs24.x
+      Handler: index.handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      MemorySize: !Ref LambdaMemorySize
+      Timeout: !Ref LambdaTimeout
+      Environment:
+        Variables:
+          RECAPTCHA_SECRET_KEY: !Ref RecaptchaSecretKey
+          TABLE_NAME: !Ref DynamoDBTableName
+          VERIFIED_SOURCE_EMAIL: !Ref VerifiedSourceEmail
+          SENDER_DISPLAY_NAME: !Ref SenderDisplayName
+          ADMIN_INBOX: !Ref AdminInbox
+      Code:
+        ZipFile: |
+          export const handler = async () => ({
+            statusCode: 200,
+            headers: { "Access-Control-Allow-Origin": "*" },
+            body: JSON.stringify({ message: "Placeholder — deploy actual handler code." })
+          });
+
+  # ─────────────────────────────────────────────
+  # API Gateway — REST API
+  # ─────────────────────────────────────────────
+  RestApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: xEngineer-Pipeline-API
+      Description: REST API for X-Engineer form submission pipeline
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+
+  RegisterResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref RestApi
+      ParentId: !GetAtt RestApi.RootResourceId
+      PathPart: register
+
+  # ─────────────────────────────────────────────
+  # API Gateway — OPTIONS (CORS Preflight)
+  # ─────────────────────────────────────────────
+  OptionsMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref RestApi
+      ResourceId: !Ref RegisterResource
+      HttpMethod: OPTIONS
+      AuthorizationType: NONE
+      Integration:
+        Type: MOCK
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+        IntegrationResponses:
+          - StatusCode: '200'
+            ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+              method.response.header.Access-Control-Allow-Methods: "'OPTIONS,POST'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+      MethodResponses:
+        - StatusCode: '200'
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: false
+            method.response.header.Access-Control-Allow-Methods: false
+            method.response.header.Access-Control-Allow-Origin: false
+
+  # ─────────────────────────────────────────────
+  # API Gateway — POST (Lambda Proxy)
+  # ─────────────────────────────────────────────
+  PostMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref RestApi
+      ResourceId: !Ref RegisterResource
+      HttpMethod: POST
+      AuthorizationType: NONE
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${RegistrationLambda.Arn}/invocations
+
+  # ─────────────────────────────────────────────
+  # Lambda Permission — Allow API Gateway to invoke
+  # ─────────────────────────────────────────────
+  LambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref RegistrationLambda
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${RestApi}/*/POST/register
+
+  # ─────────────────────────────────────────────
+  # API Gateway — Deployment & Stage
+  # ─────────────────────────────────────────────
+  ApiDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn:
+      - OptionsMethod
+      - PostMethod
+    Properties:
+      RestApiId: !Ref RestApi
+
+  ApiStage:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      RestApiId: !Ref RestApi
+      DeploymentId: !Ref ApiDeployment
+      StageName: prod
+
+  # ─────────────────────────────────────────────
+  # SES — Verified Email Identity
+  # ─────────────────────────────────────────────
+  SenderEmailIdentity:
+    Type: AWS::SES::EmailIdentity
+    Properties:
+      Email: !Ref VerifiedSourceEmail
+
+Outputs:
+  ApiEndpointUrl:
+    Description: API Gateway endpoint URL for form submissions
+    Value: !Sub https://${RestApi}.execute-api.${AWS::Region}.amazonaws.com/${ApiStage}/register
+
+  DynamoDbTableArn:
+    Description: ARN of the DynamoDB leads table
+    Value: !GetAtt LeadsTable.Arn
+
+  LambdaFunctionArn:
+    Description: ARN of the registration Lambda function
+    Value: !GetAtt RegistrationLambda.Arn
+
+  LambdaRoleArn:
+    Description: ARN of the Lambda execution role
+    Value: !GetAtt LambdaExecutionRole.Arn
