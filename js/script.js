@@ -116,6 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
       form.querySelectorAll('input[type="radio"]:checked').forEach(r => { data[r.name] = r.value; });
 
       const reviewHTML = Object.entries(data)
+        .filter(([k]) => k !== 'g-recaptcha-response')
         .map(([k, v]) => `<div class="review-row"><span class="review-label">${labels[k] || k}</span><span class="review-value">${v}</span></div>`)
         .join('');
       reviewConfirmBtn.closest('.form-action-row').classList.remove('hidden');
