@@ -11,53 +11,32 @@ X-Engineer は、GitHub Pages で静的サイトとしてホストされる日�
 ## 🏗️ AWS アーキテクチャ図
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                        ユーザーブラウザ                            │
-│   GitHub Pages (静的ホスティング)                                  │
-│  ┌──────────────┐  ┌───────────────┐  ┌─────────────────────┐     │
-│  │  index.html   │  │  script.js    │  │  reCAPTCHA v2       │     │
-│  │  (JA / EN UI) │  │  (フォーム逻辑) │  │  (ボット対策)        │     │
-│  └──────┬───────┘  └───────┬───────┘  └──────────┬──────────┘     │
-└─────────┼──────────────────┼─────────────────────┼───────────────┘
-          │                  │                     │
-          │       POST + recaptchaToken            │
-          │                  │                     │
-          ▼                  ▼                     ▼
-┌─────────────────────────────────────────────────────────────────┐
-│               API Gateway (REST API)                              │
-│               xEngineer-Pipeline-API                              │
-│               /register  [OPTIONS + POST]                        │
-│               CORS: Access-Control-Allow-Origin: *              │
-└──────────────────────────────┬──────────────────────────────────┘
-                               │  Lambda プロキシ統合
-                               ▼
-┌─────────────────────────────────────────────────────────────────┐
-│            Lambda: xEngineer-commitFinalRegistration             │
-│            ランタイム: nodejs24.x | メモリ: 256MB | タイムアウト: 15s │
-│                                                                  │
-│  Step 1:  reCAPTCHA 検証  ──►  Google siteverify API             │
-│  Step 2:  body からトークン削除 (delete body.recaptchaToken)      │
-│  Step 3:  UUID + タイムスタンプ生成                               │
-│  Step 4:  DynamoDB へ保存                                         │
-│  Step 5:  SES でメール送信 (クライアント + 管理者)                │
-│                                                                  │
-│  環境変数: RECAPTCHA_SECRET_KEY, TABLE_NAME,                      │
-│           VERIFIED_SOURCE_EMAIL, ADMIN_INBOX                      │
-└──────┬───────────────────────────────────┬─────────────────────┘
-       │                                   │
-       ▼                                   ▼
-┌──────────────────┐          ┌──────────────────────────┐
-│   DynamoDB       │          │     Amazon SES           │
-│   テーブル:       │          │                          │
-│   LeadsAnd       │          │  ┌────────────────────┐ │
-│   Applications   │          │  │ クライアントメール   │ │
-│                  │          │  │ (確認返信)           │ │
-│   PK: id (UUID)  │          │  └────────────────────┘ │
-│   課金:          │          │  ┌────────────────────┐ │
-│   オンデマンド    │          │  │ 管理者メール        │ │
-│                  │          │  │ (リード通知)         │ │
-└──────────────────┘          │  └────────────────────┘ │
-                              └──────────────────────────┘
+┌──────────────────────────────────────────────────────┐
+│                   ユーザーブラウザ                       │
+│            GitHub Pages (静的ホスティング)               │
+│    index.html (JA/EN)   script.js   reCAPTCHA v2      │
+└──────────────────────────────────────────────────────┘
+               POST + recaptchaToken
+┌──────────────────────────────────────────────────────┐
+│          API Gateway: xEngineer-Pipeline-API          │
+│           /register [OPTIONS + POST]  CORS: *         │
+└──────────────────────────────────────────────────────┘
+             Lambda プロキシ統合
+┌──────────────────────────────────────────────────────┐
+│      Lambda: xEngineer-commitFinalRegistration        │
+│       nodejs24.x | 256MB | タイムアウト: 15s          │
+│  1: reCAPTCHA 検証 (Google siteverify)               │
+│  2: トークン削除 (delete body.recaptchaToken)         │
+│  3: UUID + タイムスタンプ生成                          │
+│  4: DynamoDB へ保存                                   │
+│  5: SES でメール送信 (クライアント + 管理者)           │
+└──────────────────────────────────────────────────────┘
+┌────────────────────┐  ┌────────────────────────────┐
+│     DynamoDB       │  │        Amazon SES           │
+│LeadsAndApplications│  │ クライアントメール (確認返信)  │
+│   PK: id (UUID)    │  │ 管理者メール (リード通知)     │
+│    オンデマンド     │  └────────────────────────────┘
+└────────────────────┘
 ```
 
 ---
@@ -128,78 +107,32 @@ X-Engineer は、GitHub Pages で静的サイトとしてホストされる日�
 ### フォーム送信パイプライン
 
 ```
-ユーザーがフォームに入力
-    │
-    ▼
-[1] ユーザーが「送信」をクリック
-    │
-    ▼
-[2] フロントエンド: 必須項目チェック (HTML5 checkValidity)
-    │  └─ 失敗 ──► エラーメッセージ表示、停止
-    ▼
-[3] フロントエンド: reCAPTCHA 検証 (grecaptcha.getResponse)
-    │  └─ 失敗 ──► CAPTCHA エラー表示、停止
-    ▼
-[4] 確認ペイン表示 (g-recaptcha-response は除外済み)
-    │
-    ▼
-[5] ユーザーが「確定して送信」をクリック
-    │
-    ▼
-[6] フロントエンド: API Gateway に POST 送信:
-    │  {
-    │    fullName / companyName,
-    │    email, contact,
-    │    jlptLevel / sector,
-    │    awsExperience / projectRequirements,
-    │    githubUrl,
-    │    recaptchaToken
-    │  }
-    ▼
-[7] API Gateway: プロキシ統合で Lambda に転送
-    │
-    ▼
-[8] Lambda: Google siteverify API で reCAPTCHA トークン検証
-    │  └─ 失敗 ──► 403 返却、停止
-    ▼
-[9] Lambda: body から recaptchaToken を削除
-    │
-    ▼
+[1]  ユーザーが「送信」をクリック
+[2]  フロントエンド: 必須項目チェック (checkValidity)  失敗: エラー表示、停止
+[3]  フロントエンド: reCAPTCHA 検証 (getResponse)  失敗: CAPTCHA エラー表示、停止
+[4]  確認ペイン表示 (g-recaptcha-response 除外済み)
+[5]  ユーザーが「確定して送信」をクリック
+[6]  フロントエンド: API Gateway に POST + recaptchaToken 送信
+[7]  API Gateway: プロキシ統合で Lambda に転送
+[8]  Lambda: Google siteverify で reCAPTCHA 検証  失敗: 403 返却、停止
+[9]  Lambda: body から recaptchaToken を削除
 [10] Lambda: UUID + ISO タイムスタンプ生成
-    │
-    ▼
 [11] Lambda: DynamoDB に保存 (PutCommand)
-    │
-    ▼
 [12] Lambda: SES でメール送信 (Promise.allSettled)
-    │  ├─ クライアント確認メール (バイリンガル)
-    │  └─ 管理者通知メール (生ペイロード含む)
-    ▼
+       クライアント確認 (バイリンガル)  管理者通知 (生ペイロード含む)
 [13] Lambda: 200 + entry ID 返却
-    │
-    ▼
 [14] フロントエンド: 成功メッセージ表示、フォーム + reCAPTCHA リセット
 ```
 
 ### メール転送パイプライン（受信）
 
 ```
-受信メール到着
-    │
-    ▼
-SES がメール受信 ──► S3 に生メール保存 (moses-mails/general-mails/{messageId})
-    │
-    ▼
-SES が mail-forwarder Lambda をトリガー
-    │
-    ▼
-Lambda: S3 から生メール取得
-    │
-    ▼
-Lambda: ヘッダー解析 (送信元, 宛先, 件名)
-    │
-    ▼
-Lambda: SES で riadraz@gmail.com に転送
+[1] SES が受信メールを受領
+[2] SES が S3 に生メール保存 (moses-mails/general-mails/{messageId})
+[3] SES が mail-forwarder Lambda をトリガー
+[4] Lambda が S3 から生メール取得
+[5] Lambda がヘッダー解析 (送信元, 宛先, 件名)
+[6] Lambda が SES で riadraz@gmail.com に転送
 ```
 
 ---

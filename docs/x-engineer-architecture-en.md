@@ -11,53 +11,32 @@ The frontend is built with vanilla JavaScript, Tailwind CSS (CDN), Marked.js for
 ## 🏗️ AWS Architecture Diagram
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                        USER BROWSER                              │
-│   GitHub Pages (Static Hosting)                                   │
-│  ┌──────────────┐  ┌───────────────┐  ┌─────────────────────┐     │
-│  │  index.html   │  │  script.js    │  │  reCAPTCHA v2       │     │
-│  │  (JA / EN UI) │  │  (Form logic) │  │  (Bot protection)   │     │
-│  └──────┬───────┘  └───────┬───────┘  └──────────┬──────────┘     │
-└─────────┼──────────────────┼─────────────────────┼───────────────┘
-          │                  │                     │
-          │       POST + recaptchaToken            │
-          │                  │                     │
-          ▼                  ▼                     ▼
-┌─────────────────────────────────────────────────────────────────┐
-│               API Gateway (REST API)                             │
-│               xEngineer-Pipeline-API                             │
-│               /register  [OPTIONS + POST]                        │
-│               CORS: Access-Control-Allow-Origin: *              │
-└──────────────────────────────┬──────────────────────────────────┘
-                               │  Lambda Proxy Integration
-                               ▼
-┌─────────────────────────────────────────────────────────────────┐
-│            Lambda: xEngineer-commitFinalRegistration             │
-│            Runtime: nodejs24.x | Memory: 256MB | Timeout: 15s   │
-│                                                                  │
-│  Step 1:  Verify reCAPTCHA  ──►  Google siteverify API          │
-│  Step 2:  Strip token from body (delete body.recaptchaToken)    │
-│  Step 3:  Generate UUID + timestamp                             │
-│  Step 4:  Persist to DynamoDB                                    │
-│  Step 5:  Send emails via SES (client + admin)                  │
-│                                                                  │
-│  Env Vars: RECAPTCHA_SECRET_KEY, TABLE_NAME,                     │
-│           VERIFIED_SOURCE_EMAIL, ADMIN_INBOX                     │
-└──────┬───────────────────────────────────┬─────────────────────┘
-       │                                   │
-       ▼                                   ▼
-┌──────────────────┐          ┌──────────────────────────┐
-│   DynamoDB       │          │     Amazon SES           │
-│   Table:         │          │                          │
-│   LeadsAnd       │          │  ┌────────────────────┐ │
-│   Applications   │          │  │ Client email        │ │
-│                  │          │  │ (Confirmation reply)│ │
-│   PK: id (UUID)  │          │  └────────────────────┘ │
-│   Billing:       │          │  ┌────────────────────┐ │
-│   Pay-per-request│          │  │ Admin email        │ │
-│                  │          │  │ (Lead notification) │ │
-└──────────────────┘          │  └────────────────────┘ │
-                              └──────────────────────────┘
+┌──────────────────────────────────────────────────────┐
+│                    USER BROWSER                        │
+│             GitHub Pages (Static Hosting)              │
+│    index.html (JA/EN)   script.js   reCAPTCHA v2      │
+└──────────────────────────────────────────────────────┘
+               POST + recaptchaToken
+┌──────────────────────────────────────────────────────┐
+│          API Gateway: xEngineer-Pipeline-API          │
+│           /register [OPTIONS + POST]  CORS: *         │
+└──────────────────────────────────────────────────────┘
+              Lambda Proxy Integration
+┌──────────────────────────────────────────────────────┐
+│      Lambda: xEngineer-commitFinalRegistration        │
+│          nodejs24.x | 256MB | Timeout: 15s           │
+│  1: Verify reCAPTCHA (Google siteverify)              │
+│  2: Strip token (delete body.recaptchaToken)          │
+│  3: Generate UUID + timestamp                         │
+│  4: Persist to DynamoDB                               │
+│  5: Send emails via SES (client + admin)              │
+└──────────────────────────────────────────────────────┘
+┌────────────────────┐  ┌────────────────────────────┐
+│     DynamoDB       │  │        Amazon SES           │
+│LeadsAndApplications│  │ Client email (Confirmation) │
+│   PK: id (UUID)    │  │ Admin email (Notification)  │
+│  Pay-per-request   │  └────────────────────────────┘
+└────────────────────┘
 ```
 
 ---
@@ -128,78 +107,32 @@ The frontend is built with vanilla JavaScript, Tailwind CSS (CDN), Marked.js for
 ### Form Submission Pipeline
 
 ```
-User fills form
-    │
-    ▼
-[1] User clicks "Submit"
-    │
-    ▼
-[2] Frontend validates required fields (HTML5 checkValidity)
-    │  └─ FAIL ──► Show error message, stop
-    ▼
-[3] Frontend validates reCAPTCHA (grecaptcha.getResponse)
-    │  └─ FAIL ──► Show CAPTCHA error, stop
-    ▼
-[4] Show Review Pane (filtered: no g-recaptcha-response field)
-    │
-    ▼
-[5] User clicks "Confirm & Submit"
-    │
-    ▼
-[6] Frontend sends POST to API Gateway:
-    │  {
-    │    fullName / companyName,
-    │    email, contact,
-    │    jlptLevel / sector,
-    │    awsExperience / projectRequirements,
-    │    githubUrl,
-    │    recaptchaToken
-    │  }
-    ▼
-[7] API Gateway routes to Lambda via Proxy Integration
-    │
-    ▼
-[8] Lambda: verify reCAPTCHA token with Google siteverify API
-    │  └─ FAIL ──► Return 403, stop
-    ▼
-[9] Lambda: delete recaptchaToken from body
-    │
-    ▼
-[10] Lambda: generate UUID + ISO timestamp
-    │
-    ▼
-[11] Lambda: persist to DynamoDB (PutCommand)
-    │
-    ▼
-[12] Lambda: send emails via SES (Promise.allSettled)
-    │  ├─ Client confirmation email (bilingual)
-    │  └─ Admin notification email (with raw payload)
-    ▼
-[13] Lambda: return 200 + entry ID
-    │
-    ▼
-[14] Frontend: show success message, reset form + reCAPTCHA widget
+[1]  User clicks "Submit"
+[2]  Frontend validates fields (checkValidity)  FAIL: show error, stop
+[3]  Frontend validates reCAPTCHA (getResponse)  FAIL: show CAPTCHA error, stop
+[4]  Show Review Pane (filtered: no g-recaptcha-response)
+[5]  User clicks "Confirm & Submit"
+[6]  Frontend sends POST to API Gateway + recaptchaToken
+[7]  API Gateway routes to Lambda (Proxy Integration)
+[8]  Lambda verifies reCAPTCHA via Google siteverify  FAIL: return 403, stop
+[9]  Lambda strips token (delete body.recaptchaToken)
+[10] Lambda generates UUID + ISO timestamp
+[11] Lambda persists to DynamoDB (PutCommand)
+[12] Lambda sends emails via SES (Promise.allSettled)
+       Client confirmation (bilingual)  Admin notification (raw payload)
+[13] Lambda returns 200 + entry ID
+[14] Frontend shows success, resets form + reCAPTCHA
 ```
 
 ### Mail Forwarder Pipeline (Inbound)
 
 ```
-Inbound email arrives
-    │
-    ▼
-SES receives email ──► stores raw email in S3 (moses-mails/general-mails/{messageId})
-    │
-    ▼
-SES triggers mail-forwarder Lambda
-    │
-    ▼
-Lambda: retrieve raw email from S3
-    │
-    ▼
-Lambda: parse headers (sender, recipients, subject)
-    │
-    ▼
-Lambda: forward to riadraz@gmail.com via SES
+[1] Inbound email arrives at SES
+[2] SES stores raw email in S3 (moses-mails/general-mails/{messageId})
+[3] SES triggers mail-forwarder Lambda
+[4] Lambda retrieves raw email from S3
+[5] Lambda parses headers (sender, recipients, subject)
+[6] Lambda forwards to riadraz@gmail.com via SES
 ```
 
 ---
