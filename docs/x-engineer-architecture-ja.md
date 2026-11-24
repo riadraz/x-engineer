@@ -11,32 +11,21 @@ X-Engineer は、GitHub Pages で静的サイトとしてホストされる日�
 ## 🏗️ AWS アーキテクチャ図
 
 ```
-┌──────────────────────────────────────────────────────┐
-│                   ユーザーブラウザ                       │
-│            GitHub Pages (静的ホスティング)               │
-│    index.html (JA/EN)   script.js   reCAPTCHA v2      │
-└──────────────────────────────────────────────────────┘
-               POST + recaptchaToken
-┌──────────────────────────────────────────────────────┐
-│          API Gateway: xEngineer-Pipeline-API          │
-│           /register [OPTIONS + POST]  CORS: *         │
-└──────────────────────────────────────────────────────┘
-             Lambda プロキシ統合
-┌──────────────────────────────────────────────────────┐
-│      Lambda: xEngineer-commitFinalRegistration        │
-│       nodejs24.x | 256MB | タイムアウト: 15s          │
-│  1: reCAPTCHA 検証 (Google siteverify)               │
-│  2: トークン削除 (delete body.recaptchaToken)         │
-│  3: UUID + タイムスタンプ生成                          │
-│  4: DynamoDB へ保存                                   │
-│  5: SES でメール送信 (クライアント + 管理者)           │
-└──────────────────────────────────────────────────────┘
-┌────────────────────┐  ┌────────────────────────────┐
-│     DynamoDB       │  │        Amazon SES           │
-│LeadsAndApplications│  │ クライアントメール (確認返信)  │
-│   PK: id (UUID)    │  │ 管理者メール (リード通知)     │
-│    オンデマンド     │  └────────────────────────────┘
-└────────────────────┘
+[1]  ユーザーブラウザ — GitHub Pages (静的ホスティング)
+     index.html (JA/EN) | script.js | reCAPTCHA v2
+[2]  POST + recaptchaToken を API Gateway に送信
+[3]  API Gateway — xEngineer-Pipeline-API
+     /register [OPTIONS + POST]  CORS: *
+[4]  Lambda プロキシ統合で Lambda に転送
+[5]  Lambda: xEngineer-commitFinalRegistration
+     nodejs24.x | 256MB | タイムアウト: 15s
+     1: reCAPTCHA 検証 (Google siteverify)
+     2: トークン削除 (delete body.recaptchaToken)
+     3: UUID + タイムスタンプ生成
+     4: DynamoDB へ保存
+     5: SES でメール送信 (クライアント + 管理者)
+[6]  DynamoDB — LeadsAndApplications | PK: id (UUID) | オンデマンド
+     Amazon SES — クライアントメール (確認返信) | 管理者メール (リード通知)
 ```
 
 ---

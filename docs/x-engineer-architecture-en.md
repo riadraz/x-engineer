@@ -11,32 +11,21 @@ The frontend is built with vanilla JavaScript, Tailwind CSS (CDN), Marked.js for
 ## 🏗️ AWS Architecture Diagram
 
 ```
-┌──────────────────────────────────────────────────────┐
-│                    USER BROWSER                        │
-│             GitHub Pages (Static Hosting)              │
-│    index.html (JA/EN)   script.js   reCAPTCHA v2      │
-└──────────────────────────────────────────────────────┘
-               POST + recaptchaToken
-┌──────────────────────────────────────────────────────┐
-│          API Gateway: xEngineer-Pipeline-API          │
-│           /register [OPTIONS + POST]  CORS: *         │
-└──────────────────────────────────────────────────────┘
-              Lambda Proxy Integration
-┌──────────────────────────────────────────────────────┐
-│      Lambda: xEngineer-commitFinalRegistration        │
-│          nodejs24.x | 256MB | Timeout: 15s           │
-│  1: Verify reCAPTCHA (Google siteverify)              │
-│  2: Strip token (delete body.recaptchaToken)          │
-│  3: Generate UUID + timestamp                         │
-│  4: Persist to DynamoDB                               │
-│  5: Send emails via SES (client + admin)              │
-└──────────────────────────────────────────────────────┘
-┌────────────────────┐  ┌────────────────────────────┐
-│     DynamoDB       │  │        Amazon SES           │
-│LeadsAndApplications│  │ Client email (Confirmation) │
-│   PK: id (UUID)    │  │ Admin email (Notification)  │
-│  Pay-per-request   │  └────────────────────────────┘
-└────────────────────┘
+[1]  USER BROWSER — GitHub Pages (Static Hosting)
+     index.html (JA/EN) | script.js | reCAPTCHA v2
+[2]  POST + recaptchaToken sent to API Gateway
+[3]  API Gateway — xEngineer-Pipeline-API
+     /register [OPTIONS + POST]  CORS: *
+[4]  Lambda Proxy Integration routes to Lambda
+[5]  Lambda: xEngineer-commitFinalRegistration
+     nodejs24.x | 256MB | Timeout: 15s
+     1: Verify reCAPTCHA (Google siteverify)
+     2: Strip token (delete body.recaptchaToken)
+     3: Generate UUID + timestamp
+     4: Persist to DynamoDB
+     5: Send emails via SES (client + admin)
+[6]  DynamoDB — LeadsAndApplications | PK: id (UUID) | Pay-per-request
+     Amazon SES — Client email (Confirmation) | Admin email (Notification)
 ```
 
 ---
