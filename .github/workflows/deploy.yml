@@ -1,5 +1,23 @@
+name: Deploy Static Site to GitHub Pages
+
+on:
+  push:
+    branches: ["main"] # Change to "master" if your default branch is named master
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
 jobs:
-  build:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -11,11 +29,7 @@ jobs:
           node-version: 20
 
       - name: Generate manifest.json
-        run: |
-          rm -f docs/manifest.json
-          node generate-manifest.js
-          echo "=== Generated docs/manifest.json ==="
-          cat docs/manifest.json
+        run: node generate-manifest.js
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
@@ -23,15 +37,8 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.'
+          path: '.' # This uploads everything from your project root
 
-  deploy:
-    needs: build
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
