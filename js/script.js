@@ -2,6 +2,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const LAMBDA_URL = 'https://gqns1d7wza.execute-api.us-east-1.amazonaws.com/prod/register';
 
+  // Open all markdown-rendered links in a new tab
+  marked.use({
+    renderer: {
+      link({ href, title, text }) {
+        const t = title ? ` title="${title}"` : '';
+        return `<a href="${href}"${t} target="_blank" rel="noopener noreferrer">${text}</a>`;
+      }
+    }
+  });
+
   // --- FIELD LABEL MAPPINGS (per language) ---
   const fieldLabelMappingJa = {
     candidate_name: 'フルネーム',
