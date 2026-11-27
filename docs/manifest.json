@@ -1,22 +1,22 @@
 [
   {
     "id": "portfolio-en",
-    "title": "Portfolio — AWS XOps Expert (EN)",
+    "title": "Portfolio (EN)",
     "file": "docs/portfolio-en.md"
   },
   {
     "id": "portfolio-ja",
-    "title": "ポートフォリオ — AWS XOps エキスパート (JA)",
+    "title": "Portfolio (JA)",
     "file": "docs/portfolio-ja.md"
   },
   {
-    "id": "x-engineer-arch-en",
-    "title": "X-Engineer Architecture (EN)",
+    "id": "x-engineer-architecture-en",
+    "title": "X Engineer Architecture (EN)",
     "file": "docs/x-engineer-architecture-en.md"
   },
   {
-    "id": "x-engineer-arch-ja",
-    "title": "X-Engineer アーキテクチャ (JA)",
+    "id": "x-engineer-architecture-ja",
+    "title": "X Engineer Architecture (JA)",
     "file": "docs/x-engineer-architecture-ja.md"
   }
 ]
