@@ -20,6 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
     jlpt_level: '日本語能力試験レベル',
     aws_exp: 'AWSの知識 / 経験',
     github_url: 'GitHub URL',
+    how_heard: 'このサイトを知ったきっかけ',
+    country_timezone: '居住国 & タイムゾーン',
     company_name: '会社名',
     company_email: 'メールアドレス',
     company_contact: '担当者連絡先',
@@ -34,6 +36,8 @@ document.addEventListener('DOMContentLoaded', () => {
     jlpt_level: 'JLPT Level',
     aws_exp: 'AWS Knowledge / Experience',
     github_url: 'GitHub URL',
+    how_heard: 'How did you hear about us?',
+    country_timezone: 'Country & Time Zone',
     company_name: 'Company Name',
     company_email: 'Business Email',
     company_contact: 'Contact Person',
@@ -159,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const isCandidate = currentActiveFormId.includes('candidate');
       const payload = isCandidate
-        ? { fullName: data.candidate_name, email: data.candidate_email, contact: data.candidate_contact, jlptLevel: data.jlpt_level, awsExperience: data.aws_exp, githubUrl: data.github_url }
+        ? { fullName: data.candidate_name, email: data.candidate_email, contact: data.candidate_contact, jlptLevel: data.jlpt_level, awsExperience: data.aws_exp, githubUrl: data.github_url, howHeard: data.how_heard || '', countryTimezone: data.country_timezone || '' }
         : { companyName: data.company_name, email: data.company_email, contact: data.company_contact, sector: data.company_sector, projectRequirements: data.project_requirements };
       payload.recaptchaToken = currentRecaptchaToken;
 

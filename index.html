@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>IT Blog - Dynamic Grid Layout</title>
+  <title>X-Engineers | AWS・マルチクラウド運用パートナー (MM Digital Engagement Inc.)</title>
+  <meta name="description" content="AWS・マルチクラウドの運用設計、コスト最適化、セキュリティ、AI/MLOpsを日本企業向けにリモートで提供。 / Remote AWS and multicloud operations, cost optimization, security and AI/MLOps for Japanese companies.">
   
   <!-- Tailwind Play CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -27,6 +28,7 @@
   <script src="https://www.google.com/recaptcha/api.js?render=explicit&onload=onRecaptchaLoad" async defer></script>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/custom-style.css">
+  <link rel="stylesheet" href="css/review-spacing.css">
 </head>
 <body>
 
@@ -57,17 +59,17 @@
 
     <!-- HERO SECTION (Directly under the menu bar) -->
     <section class="hero-section">
-      <h1 id="hero-title-ja" class="hero-title">「AWS × PMO × 運用設計 × 業務知識」</h1>
-      <h1 id="hero-title-en" class="hero-title hidden">AWS × PMO × Operations Design × Business Knowledge</h1>
+      <h1 id="hero-title-ja" class="hero-title">AWS・マルチクラウドの運用を、日本企業のためにリモートで</h1>
+      <h1 id="hero-title-en" class="hero-title hidden">AWS and multicloud operations for Japanese companies, delivered remotely</h1>
       
       <!-- Japanese Hero Subtext (Default visible) -->
       <p id="hero-desc-ja" class="hero-description lang-toggle-text">
-        当社は、専門分野に特化したデータエンジニアリング、高度なXOps、そして集中的な語学研修を通じて、グローバルな人材と日本企業との間のギャップを埋めます。
+        運用設計・構築・監視・コスト最適化・セキュリティ・AI/MLOpsを、範囲と費用を明確にしてご提供します。<br><a href="#contact-ja" class="form-submit-btn" style="display:inline-block;margin-top:1rem;text-decoration:none">無料相談はこちら</a>
       </p>
       
       <!-- English Hero Subtext (Default hidden) -->
       <p id="hero-desc-en" class="hero-description lang-toggle-text hidden">
-        We bridge the gap between global talent and Japanese enterprises through specialized data engineering, advanced XOps practices, and intensive language training.
+        Operations design, build, monitoring, cost optimization, security and AI/MLOps, with clear scope and pricing.<br><a href="#contact-en" class="form-submit-btn" style="display:inline-block;margin-top:1rem;text-decoration:none">Book a free consultation</a>
       </p>
 
       
@@ -75,24 +77,47 @@
     
     <!-- Japanese Content Hub -->
     <div id="post-ja" class="lang-group" lang="ja">
+      <section class="grid-top-four" id="services-ja">
+    <div class="grid-card text-rich-card">
+      <h2 class="card-main-title">AWSコスト診断</h2>
+      <div class="card-sub-section"><h3 class="card-accent-label">成果</h3><p class="card-body-text">利用状況を棚卸しし、無駄な支出と削減余地を優先順位付きで報告します（FinOps）。</p></div>
+      <div class="card-sub-section border-top-dash"><h3 class="card-accent-label">進め方</h3><p class="card-body-text">範囲と費用を事前に合意する固定見積もり。</p></div>
+    </div>
+    <div class="grid-card text-rich-card">
+      <h2 class="card-main-title">設計・セキュリティレビュー</h2>
+      <div class="card-sub-section"><h3 class="card-accent-label">成果</h3><p class="card-body-text">Well-Architectedの観点で構成を評価し、IAM・可用性・災害復旧のリスクと改善案を提示します。</p></div>
+      <div class="card-sub-section border-top-dash"><h3 class="card-accent-label">進め方</h3><p class="card-body-text">範囲と費用を事前に合意する固定見積もり。</p></div>
+    </div>
+    <div class="grid-card text-rich-card">
+      <h2 class="card-main-title">ランディングゾーン構築</h2>
+      <div class="card-sub-section"><h3 class="card-accent-label">成果</h3><p class="card-body-text">マルチアカウント構成、権限管理、ログ・監査の基盤をIaCで整備します。</p></div>
+      <div class="card-sub-section border-top-dash"><h3 class="card-accent-label">進め方</h3><p class="card-body-text">範囲と費用を事前に合意する固定見積もり。</p></div>
+    </div>
+    <div class="grid-card text-rich-card">
+      <h2 class="card-main-title">月額運用・監視サポート</h2>
+      <div class="card-sub-section"><h3 class="card-accent-label">成果</h3><p class="card-body-text">監視、障害一次対応、パッチ・コスト管理を継続的に代行します。</p></div>
+      <div class="card-sub-section border-top-dash"><h3 class="card-accent-label">進め方</h3><p class="card-body-text">月額契約。対応範囲とSLAを明記します。</p></div>
+    </div>
+      </section>
+
       <!-- SECTION 1: TOP 4 HORIZONTAL CONTAINER -->
-      <section class="grid-top-four">
+      <section class="grid-top-four" id="contact-ja">
                 <!-- CARD 1: CANDIDATE ROADMAP & SETUP INFO -->
         <div class="grid-card text-rich-card">
           <h2 class="card-main-title">候補者:</h2>
           
           <div class="card-sub-section">
-            <h3 class="card-accent-label">生きがいの約束</h3>
-            <p class="card-body-text">ハイブリッド人材/日本語能力試験N2レベルからフルスタックSE、PM、またはCTOへの3～5年間のロードマップ。</p>
+            <h3 class="card-accent-label">キャリアパス例</h3>
+            <p class="card-body-text">日本語能力試験N2レベルのハイブリッド人材が、3～5年でフルスタックSE・PM・CTOを目指すロードマップ例です（成果を保証するものではありません）。</p>
           </div>
           
           <div class="card-sub-section">
-            <h3 class="card-accent-label">ブートキャンプ指標 / 日本語語学研修</h3>
-            <p class="card-body-text"><span class="highlight-badge">4ヶ月</span> 700～800時間の集中的なAWSクラウド対応トレーニング。</p>
+            <h3 class="card-accent-label">ブートキャンプ概要 / 日本語研修</h3>
+            <p class="card-body-text"><span class="highlight-badge">4ヶ月（予定）</span> 700～800時間の集中的なAWSクラウド対応トレーニングを計画しています。</p>
           </div>
           
           <div class="card-sub-section border-top-dash">
-            <h3 class="card-accent-label warning-color">リモート設定が必要です</h3>
+            <h3 class="card-accent-label warning-color">リモート勤務に必要な環境</h3>
             <p class="card-body-text">高速インターネットインフラ、ホームテクセットアップ、法人用クラウド決済カード。</p>
           </div>
         </div>
@@ -103,7 +128,7 @@
           
           <div class="card-sub-section">
             <h3 class="card-accent-label">アーキテクチャーファースト</h3>
-            <p class="card-body-text">AI/ML導入の基盤となる、高度なドメインデータエンジニアリング（パイプライン、TLS、RAG、エージェントAI）を提供。</p>
+            <p class="card-body-text">AI/ML導入の基盤となる、高度なドメインデータエンジニアリング（パイプライン、ETL、RAG、エージェントAI）を提供。</p>
           </div>
           
           <div class="card-sub-section">
@@ -112,7 +137,7 @@
           </div>
           
           <div class="card-sub-section border-top-dash">
-            <h3 class="card-accent-label">作戦戦略 ＆ 提供フレームワーク</h3>
+            <h3 class="card-accent-label">運用戦略 ＆ 提供フレームワーク</h3>
             <p class="card-body-text">高度なツールによって透過的に管理される、本番環境に対応したワークロード。</p>
           </div>
         </div>
@@ -190,12 +215,15 @@
                 <label>GitHub プロフィール URL</label>
                 <input type="url" name="github_url" required placeholder="https://github.com">
               </div>
+              <div class="form-group"><label>このサイトを知ったきっかけ（任意）</label><select name="how_heard" style="width:100%;padding:.6rem;border:1px solid #cbd5e1;border-radius:6px"><option value="">--</option><option value="Facebook">Facebook</option><option value="Instagram">Instagram</option><option value="Referral">知人の紹介</option><option value="Other">その他</option></select></div>
+              <div class="form-group"><label>居住国 ＆ タイムゾーン（任意）</label><input type="text" name="country_timezone" placeholder="日本 / JST"></div>
 
               <div class="form-group">
                 <div data-recaptcha-container></div>
               </div>
 
               <!-- Inline Error Alert Message Area -->
+              <p class="card-body-text" style="font-size:.8rem">送信により、<a href="privacy.html" target="_blank" rel="noopener" style="text-decoration:underline">個人情報保護方針</a>に同意したものとみなします。</p>
               <div id="candidate-error-msg" class="form-validation-alert hidden"></div>
 
               <div class="form-action-row">
@@ -232,6 +260,7 @@
                 <div data-recaptcha-container></div>
               </div>
 
+              <p class="card-body-text" style="font-size:.8rem">送信により、<a href="privacy.html" target="_blank" rel="noopener" style="text-decoration:underline">個人情報保護方針</a>に同意したものとみなします。</p>
               <div id="corporate-error-msg" class="form-validation-alert hidden"></div>
 
               <div class="form-action-row">
@@ -295,9 +324,9 @@
       
       <!-- Column 1: Corporate Profile Summary -->
       <div class="footer-col brand-col">
-        <div class="footer-logo">X-Engineers / 企業</div>
+        <div class="footer-logo">X-Engineers（MM Digital Engagement Inc.）</div>
         <p class="footer-desc">
-          グローバルな技術人材と日本企業を繋ぐ、データエンジニアリング・XOps専門のITソリューション・人材紹介パートナー。
+          日本企業向けのクラウド基盤・データエンジニアリング・XOps支援パートナー。グローバルな技術人材のネットワークを活かし、リモートで対応します。
           <a href="https://github.com/riadraz/x-engineer" class="footer-link" target="_blank" rel="noopener noreferrer">GitHub</a>
           <a href="https://qiita.com/riadraz" class="footer-link" target="_blank" rel="noopener noreferrer">Qiita</a>
           <a href="https://zenn.dev/riadraz" class="footer-link" target="_blank" rel="noopener noreferrer">Zenn</a>
@@ -306,15 +335,19 @@
       </div>
 
       <!-- Column 2: Licensing and Accreditations -->
- 
+      <div class="footer-col compliance-col">
+        <h3 class="footer-section-title">運営会社</h3>
+        <p class="footer-legal-text">MM Digital Engagement Inc.</p>
+        <p class="footer-permit-number">法人設立・登録手続き中</p>
+        <p class="footer-permit-number">有料職業紹介・労働者派遣の許可は未取得です</p>
+      </div>
+
       <!-- Column 3: Quick Navigation References -->
       <div class="footer-col links-col">
         <h3 class="footer-section-title">企業情報</h3>
         <nav class="footer-nav">
-          <a href="#company" class="footer-link">会社概要</a>
-          <a href="#privacy" class="footer-link">個人情報保護方針 (プライバシーポリシー)</a>
-          <a href="#terms" class="footer-link">情報セキュリティ基本方針</a>
-          <a href="#compliance" class="footer-link">コンプライアンス規約</a>
+          <a href="company.html" class="footer-link">会社概要</a>
+          <a href="privacy.html" class="footer-link">個人情報保護方針 (プライバシーポリシー)</a>
         </nav>
       </div>
 
@@ -323,7 +356,7 @@
     <!-- Bottom Attribution Area -->
     <div class="footer-bottom">
       <div class="footer-bottom-wrapper">
-        <p class="copyright-notice">&copy; 2026 X-Engineers,MM Digital Engagemement Inc. All Rights Reserved.</p>
+        <p class="copyright-notice">&copy; 2026 MM Digital Engagement Inc. (X-Engineers). All Rights Reserved.</p>
         <p class="footer-sub-text">当サイトに掲載されているすべてのアーキテクチャ・テキストの無断転載を禁じます。</p>
       </div>
     </div>
@@ -335,24 +368,47 @@
 
     <!-- English Content Hub (Hidden by default) -->
     <div id="post-en" class="lang-group hidden" lang="en">
+      <section class="grid-top-four" id="services-en">
+    <div class="grid-card text-rich-card">
+      <h2 class="card-main-title">AWS Cost Audit</h2>
+      <div class="card-sub-section"><h3 class="card-accent-label">Outcome</h3><p class="card-body-text">We review your usage and report wasted spend and savings opportunities in priority order (FinOps).</p></div>
+      <div class="card-sub-section border-top-dash"><h3 class="card-accent-label">How it works</h3><p class="card-body-text">Fixed quote, with scope and price agreed upfront.</p></div>
+    </div>
+    <div class="grid-card text-rich-card">
+      <h2 class="card-main-title">Design &amp; Security Review</h2>
+      <div class="card-sub-section"><h3 class="card-accent-label">Outcome</h3><p class="card-body-text">We assess your architecture against Well-Architected principles and report IAM, availability and disaster recovery risks with fixes.</p></div>
+      <div class="card-sub-section border-top-dash"><h3 class="card-accent-label">How it works</h3><p class="card-body-text">Fixed quote, with scope and price agreed upfront.</p></div>
+    </div>
+    <div class="grid-card text-rich-card">
+      <h2 class="card-main-title">Landing Zone Setup</h2>
+      <div class="card-sub-section"><h3 class="card-accent-label">Outcome</h3><p class="card-body-text">Multi-account structure, access control, and logging/audit foundations built as code.</p></div>
+      <div class="card-sub-section border-top-dash"><h3 class="card-accent-label">How it works</h3><p class="card-body-text">Fixed quote, with scope and price agreed upfront.</p></div>
+    </div>
+    <div class="grid-card text-rich-card">
+      <h2 class="card-main-title">Monthly Ops &amp; Monitoring</h2>
+      <div class="card-sub-section"><h3 class="card-accent-label">Outcome</h3><p class="card-body-text">Ongoing monitoring, first-line incident response, patching and cost governance.</p></div>
+      <div class="card-sub-section border-top-dash"><h3 class="card-accent-label">How it works</h3><p class="card-body-text">Monthly contract, with coverage and SLA stated in writing.</p></div>
+    </div>
+      </section>
+
       <!-- SECTION 1: TOP 4 HORIZONTAL CONTAINER -->
-      <section class="grid-top-four">
+      <section class="grid-top-four" id="contact-en">
         <!-- CARD 1: CANDIDATE ROADMAP & SETUP INFO -->
         <div class="grid-card text-rich-card">
           <h2 class="card-main-title">Candidates:</h2>
 
           <div class="card-sub-section">
-            <h3 class="card-accent-label">Career Promise</h3>
-            <p class="card-body-text">A 3–5 year roadmap from hybrid talent / JLPT N2 level to full-stack SE, PM, or CTO.</p>
+            <h3 class="card-accent-label">Example Career Path</h3>
+            <p class="card-body-text">An example 3–5 year roadmap for bilingual talent at JLPT N2 level aiming for full-stack SE, PM, or CTO roles (outcomes are not guaranteed).</p>
           </div>
 
           <div class="card-sub-section">
             <h3 class="card-accent-label">Bootcamp Metrics / Japanese Language Training</h3>
-            <p class="card-body-text"><span class="highlight-badge">4 months</span> 700–800 hours of intensive AWS cloud-ready training.</p>
+            <p class="card-body-text"><span class="highlight-badge">4 months (planned)</span> A planned 700–800 hours of intensive AWS cloud-ready training.</p>
           </div>
 
           <div class="card-sub-section border-top-dash">
-            <h3 class="card-accent-label warning-color">Remote Setup Required</h3>
+            <h3 class="card-accent-label warning-color">Remote Work Requirements</h3>
             <p class="card-body-text">High-speed internet infrastructure, home tech setup, corporate cloud payment card.</p>
           </div>
         </div>
@@ -363,7 +419,7 @@
 
           <div class="card-sub-section">
             <h3 class="card-accent-label">Architecture First</h3>
-            <p class="card-body-text">Advanced domain data engineering (pipelines, TLS, RAG, agentic AI) forming the foundation for AI/ML adoption.</p>
+            <p class="card-body-text">Advanced domain data engineering (pipelines, ETL, RAG, agentic AI) forming the foundation for AI/ML adoption.</p>
           </div>
 
           <div class="card-sub-section">
@@ -447,12 +503,15 @@
                 <label>GitHub Profile URL</label>
                 <input type="url" name="github_url" required placeholder="https://github.com">
               </div>
+              <div class="form-group"><label>How did you hear about us? (optional)</label><select name="how_heard" style="width:100%;padding:.6rem;border:1px solid #cbd5e1;border-radius:6px"><option value="">--</option><option value="Facebook">Facebook</option><option value="Instagram">Instagram</option><option value="Referral">Referral</option><option value="Other">Other</option></select></div>
+              <div class="form-group"><label>Country &amp; time zone (optional)</label><input type="text" name="country_timezone" placeholder="Japan / JST"></div>
 
               <!-- Inline Error Alert Message Area -->
               <div class="form-group">
                 <div data-recaptcha-container></div>
               </div>
 
+              <p class="card-body-text" style="font-size:.8rem">By submitting, you agree to our <a href="privacy.html" target="_blank" rel="noopener" style="text-decoration:underline">Privacy Policy</a>.</p>
               <div id="candidate-error-msg-en" class="form-validation-alert hidden"></div>
 
               <div class="form-action-row">
@@ -489,6 +548,7 @@
                 <div data-recaptcha-container></div>
               </div>
 
+              <p class="card-body-text" style="font-size:.8rem">By submitting, you agree to our <a href="privacy.html" target="_blank" rel="noopener" style="text-decoration:underline">Privacy Policy</a>.</p>
               <div id="corporate-error-msg-en" class="form-validation-alert hidden"></div>
 
               <div class="form-action-row">
@@ -547,9 +607,9 @@
 
       <!-- Column 1: Corporate Profile Summary -->
       <div class="footer-col brand-col">
-        <div class="footer-logo">X-Engineers / Company</div>
+        <div class="footer-logo">X-Engineers by MM Digital Engagement Inc.</div>
         <p class="footer-desc">
-          An IT solutions and talent introduction partner specializing in data engineering and XOps, connecting global technical talent with Japanese enterprises.
+          A cloud infrastructure, data engineering and XOps partner for Japanese enterprises, delivering remotely through a network of global technical talent.
           See our
           <a href="https://github.com/riadraz/x-engineer" class="footer-link" target="_blank" rel="noopener noreferrer">GitHub</a>,
           <a href="https://qiita.com/riadraz" class="footer-link" target="_blank" rel="noopener noreferrer">Qiita</a>,
@@ -558,15 +618,19 @@
       </div>
 
       <!-- Column 2: Licensing and Accreditations -->
- 
+      <div class="footer-col compliance-col">
+        <h3 class="footer-section-title">Operating Company</h3>
+        <p class="footer-legal-text">MM Digital Engagement Inc.</p>
+        <p class="footer-permit-number">Incorporation and registration in progress</p>
+        <p class="footer-permit-number">No paid job placement or worker dispatch license is held</p>
+      </div>
+
       <!-- Column 3: Quick Navigation References -->
       <div class="footer-col links-col">
         <h3 class="footer-section-title">Company Info</h3>
         <nav class="footer-nav">
-          <a href="#company" class="footer-link">Company Overview</a>
-          <a href="#privacy" class="footer-link">Privacy Policy</a>
-          <a href="#terms" class="footer-link">Information Security Policy</a>
-          <a href="#compliance" class="footer-link">Compliance Regulations</a>
+          <a href="company.html" class="footer-link">Company Overview</a>
+          <a href="privacy.html" class="footer-link">Privacy Policy</a>
         </nav>
       </div>
 
@@ -575,7 +639,7 @@
     <!-- Bottom Attribution Area -->
     <div class="footer-bottom">
       <div class="footer-bottom-wrapper">
-        <p class="copyright-notice">&copy; 2026 X-Engineers, MM Digital Engagement Inc. All Rights Reserved.</p>
+        <p class="copyright-notice">&copy; 2026 MM Digital Engagement Inc. (X-Engineers). All Rights Reserved.</p>
         <p class="footer-sub-text">Unauthorized reproduction of all architecture and text on this site is prohibited.</p>
       </div>
     </div>
@@ -600,3 +664,4 @@
   <script src="js/app.js"></script>
 </body>
 </html>
+

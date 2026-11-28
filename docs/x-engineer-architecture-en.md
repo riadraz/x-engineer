@@ -1,251 +1,238 @@
 # X-Engineer System Architecture & AWS Pipeline
 
-## 📌 Overview
+## Overview
 
-X-Engineer is a bilingual (Japanese/English) personal blog and portfolio web application hosted as a static site on GitHub Pages. It features a candidate and corporate inquiry form pipeline backed by AWS serverless infrastructure, with Google reCAPTCHA v2 for bot protection.
+X-Engineer is a bilingual (Japanese/English) portfolio and talent site hosted as a static site on GitHub Pages. Candidate and corporate inquiry forms are processed by an AWS serverless pipeline, and Google reCAPTCHA v2 protects against bots.
 
-The frontend is built with vanilla JavaScript, Tailwind CSS (CDN), Marked.js for markdown rendering, and Highlight.js for code highlighting — no build step required. The backend uses API Gateway, Lambda, DynamoDB, and SES in a fully serverless architecture.
+| Layer | Technology |
+|---|---|
+| Frontend | Vanilla JavaScript, Tailwind CSS (CDN), Marked.js (markdown), Highlight.js (code); no build step |
+| Hosting | GitHub Pages with a custom domain |
+| Backend | API Gateway, Lambda, DynamoDB, SES (fully serverless) |
+| Bot protection | Google reCAPTCHA v2, verified server-side |
 
----
+## AWS Architecture
 
-## 🏗️ AWS Architecture Diagram
+1. **Browser (GitHub Pages):** serves `index.html` (JA/EN), `script.js` and the reCAPTCHA v2 widget.
+2. **Request:** the browser sends a POST with `recaptchaToken` to API Gateway.
+3. **API Gateway:** `xEngineer-Pipeline-API`, path `/register` (OPTIONS and POST), CORS enabled.
+4. **Routing:** Lambda proxy integration forwards the request to Lambda.
+5. **Lambda:** `xEngineer-commitFinalRegistration` verifies reCAPTCHA, removes the token, generates a UUID and timestamp, saves to DynamoDB, and sends emails through SES.
+6. **Storage and email:** DynamoDB table `LeadsAndApplications` (pay-per-request), plus SES emails to the client (confirmation) and the admin (notification).
 
-```
-[1]  USER BROWSER — GitHub Pages (Static Hosting)
-     index.html (JA/EN) | script.js | reCAPTCHA v2
-[2]  POST + recaptchaToken sent to API Gateway
-[3]  API Gateway — xEngineer-Pipeline-API
-     /register [OPTIONS + POST]  CORS: *
-[4]  Lambda Proxy Integration routes to Lambda
-[5]  Lambda: xEngineer-commitFinalRegistration
-     nodejs24.x | 256MB | Timeout: 15s
-     1: Verify reCAPTCHA (Google siteverify)
-     2: Strip token (delete body.recaptchaToken)
-     3: Generate UUID + timestamp
-     4: Persist to DynamoDB
-     5: Send emails via SES (client + admin)
-[6]  DynamoDB — LeadsAndApplications | PK: id (UUID) | Pay-per-request
-     Amazon SES — Client email (Confirmation) | Admin email (Notification)
-```
+## AWS Components
 
----
+### 1. GitHub Pages (frontend hosting)
 
-## 🔧 AWS Components
-
-### 1. GitHub Pages (Frontend Hosting)
-- **Role**: Serves the static HTML/CSS/JS files to the browser
-- **Domain**: `x-engineer.moses20608.click` (custom domain via CNAME)
-- **Cost**: Free
-- **Build**: No build step — files are served as-is from the repository
+| Item | Value |
+|---|---|
+| Role | Serves static HTML/CSS/JS to the browser |
+| Domain | `x-engineer.moses20608.click` (custom domain via CNAME) |
+| Cost | Free |
+| Build | None; files are served as-is from the repository |
 
 ### 2. Amazon API Gateway (REST API)
-- **API ID**: `gqns1d7wza`
-- **API Name**: `xEngineer-Pipeline-API`
-- **Endpoint**: `/register`
-- **Methods**:
-  - `OPTIONS` — Mock integration for CORS preflight, returns `Access-Control-Allow-Origin: *`
-  - `POST` — Lambda Proxy Integration, forwards the request body to Lambda
-- **Region**: `us-east-1`
-- **Stage**: `prod`
 
-### 3. AWS Lambda — Registration Handler
-- **Function Name**: `xEngineer-commitFinalRegistration`
-- **Runtime**: `nodejs24.x` (supports global `fetch` and ES modules)
-- **Handler**: `index.handler`
-- **Memory**: 256 MB
-- **Timeout**: 15 seconds
-- **Role**: Receives form data, verifies reCAPTCHA, stores in DynamoDB, sends emails via SES
-- **Dependencies**: AWS SDK v3 (built into the Node.js 24 Lambda runtime — no bundling needed)
+| Item | Value |
+|---|---|
+| API ID | `gqns1d7wza` |
+| API name | `xEngineer-Pipeline-API` |
+| Endpoint | `/register` |
+| OPTIONS | Mock integration for CORS preflight; returns `Access-Control-Allow-Origin: *` |
+| POST | Lambda proxy integration; forwards the request body to Lambda |
+| Region / stage | `us-east-1` / `prod` |
 
-### 4. AWS Lambda — Mail Forwarder
-- **Function Name**: `mail-forwarder`
-- **Runtime**: `nodejs20.x`
-- **Handler**: `index.handler`
-- **Role**: Triggered by SES email receipt — retrieves raw email from S3 and forwards to admin inbox
-- **Trigger**: SES email receiving rule
+### 3. AWS Lambda: registration handler
+
+| Item | Value |
+|---|---|
+| Function name | `xEngineer-commitFinalRegistration` |
+| Runtime | `nodejs24.x` (global `fetch` and ES modules) |
+| Handler | `index.handler` |
+| Memory / timeout | 256 MB / 15 seconds |
+| Role | Receives form data, verifies reCAPTCHA, stores to DynamoDB, sends emails via SES |
+| Dependencies | AWS SDK v3, built into the Node.js 24 runtime (no bundling) |
+
+### 4. AWS Lambda: mail forwarder
+
+| Item | Value |
+|---|---|
+| Function name | `mail-forwarder` |
+| Runtime | `nodejs20.x` |
+| Handler | `index.handler` |
+| Role | Reads the raw email from S3 and forwards it to the admin inbox |
+| Trigger | SES email receiving rule |
 
 ### 5. Amazon DynamoDB
-- **Table Name**: `LeadsAndApplications`
-- **Partition Key**: `id` (String — UUID v4)
-- **Billing Mode**: `PAY_PER_REQUEST` (no provisioned throughput needed)
-- **Stored Fields**: `id`, `submissionType`, `email`, `name`, `payload` (full body), `timestamp`
 
-### 6. Amazon SES (Simple Email Service)
-- **Verified Sender**: `mmcldint@mail.moses20608.click`
-- **Sender Display Name**: `MM Digital Engagement`
-- **Admin Inbox**: `riadraz@gmail.com`
-- **Sends two emails per submission**:
-  - Client confirmation (bilingual EN/JA)
-  - Admin notification with raw payload
+| Item | Value |
+|---|---|
+| Table name | `LeadsAndApplications` |
+| Partition key | `id` (String, UUID v4) |
+| Billing mode | `PAY_PER_REQUEST` (no provisioned throughput) |
+| Stored fields | `id`, `submissionType`, `email`, `name`, `payload` (full body), `timestamp` |
+
+### 6. Amazon SES
+
+| Item | Value |
+|---|---|
+| Verified sender | `mmcldint@mail.moses20608.click` |
+| Sender display name | `MM Digital Engagement` |
+| Admin inbox | `riadraz@gmail.com` |
+| Emails per submission | Two: client confirmation (bilingual EN/JA) and admin notification (raw payload) |
 
 ### 7. Amazon S3
-- **Bucket Name**: `moses-mails`
-- **Path**: `general-mails/{messageId}`
-- **Role**: Stores incoming emails received by SES for the mail-forwarder Lambda
+
+| Item | Value |
+|---|---|
+| Bucket | `moses-mails` |
+| Path | `general-mails/{messageId}` |
+| Role | Stores inbound emails received by SES for the mail-forwarder Lambda |
 
 ### 8. Google reCAPTCHA v2
-- **Type**: "I'm not a robot" checkbox
-- **Site Key**: Embedded in `index.html` (public, safe to expose)
-- **Secret Key**: Stored as Lambda environment variable `RECAPTCHA_SECRET_KEY` (private)
-- **Verification**: Server-side only — Lambda calls Google's `siteverify` endpoint
 
----
+| Item | Value |
+|---|---|
+| Type | "I'm not a robot" checkbox |
+| Site key | Embedded in `index.html` (public, safe to expose) |
+| Secret key | Lambda environment variable `RECAPTCHA_SECRET_KEY` (private) |
+| Verification | Server-side only; Lambda calls Google's `siteverify` endpoint |
 
-## 📊 Data Processing Flow
+## Data Processing Flow
 
-### Form Submission Pipeline
+### Form submission pipeline
 
-```
-[1]  User clicks "Submit"
-[2]  Frontend validates fields (checkValidity)  FAIL: show error, stop
-[3]  Frontend validates reCAPTCHA (getResponse)  FAIL: show CAPTCHA error, stop
-[4]  Show Review Pane (filtered: no g-recaptcha-response)
-[5]  User clicks "Confirm & Submit"
-[6]  Frontend sends POST to API Gateway + recaptchaToken
-[7]  API Gateway routes to Lambda (Proxy Integration)
-[8]  Lambda verifies reCAPTCHA via Google siteverify  FAIL: return 403, stop
-[9]  Lambda strips token (delete body.recaptchaToken)
-[10] Lambda generates UUID + ISO timestamp
-[11] Lambda persists to DynamoDB (PutCommand)
-[12] Lambda sends emails via SES (Promise.allSettled)
-       Client confirmation (bilingual)  Admin notification (raw payload)
-[13] Lambda returns 200 + entry ID
-[14] Frontend shows success, resets form + reCAPTCHA
-```
+| Step | Actor | Action | On failure |
+|---|---|---|---|
+| 1 | User | Clicks "Submit" | n/a |
+| 2 | Frontend | Validates fields (`checkValidity`) | Shows error, stops |
+| 3 | Frontend | Checks the reCAPTCHA response (`getResponse`) | Shows CAPTCHA error, stops |
+| 4 | Frontend | Shows the review pane (without `g-recaptcha-response`) | n/a |
+| 5 | User | Clicks "Confirm & Submit" | n/a |
+| 6 | Frontend | Sends POST with `recaptchaToken` to API Gateway | n/a |
+| 7 | API Gateway | Routes to Lambda (proxy integration) | n/a |
+| 8 | Lambda | Verifies reCAPTCHA through Google `siteverify` | Returns 403, stops |
+| 9 | Lambda | Removes the token (`delete body.recaptchaToken`) | n/a |
+| 10 | Lambda | Generates a UUID and ISO timestamp | n/a |
+| 11 | Lambda | Saves to DynamoDB (`PutCommand`) | n/a |
+| 12 | Lambda | Sends client and admin emails via SES (`Promise.allSettled`) | n/a |
+| 13 | Lambda | Returns 200 with the entry ID | n/a |
+| 14 | Frontend | Shows success; resets the form and reCAPTCHA | n/a |
 
-### Mail Forwarder Pipeline (Inbound)
+### Mail forwarder pipeline (inbound)
 
-```
-[1] Inbound email arrives at SES
-[2] SES stores raw email in S3 (moses-mails/general-mails/{messageId})
-[3] SES triggers mail-forwarder Lambda
-[4] Lambda retrieves raw email from S3
-[5] Lambda parses headers (sender, recipients, subject)
-[6] Lambda forwards to riadraz@gmail.com via SES
-```
+| Step | Actor | Action |
+|---|---|---|
+| 1 | SES | Receives the inbound email |
+| 2 | SES | Stores the raw email in S3 (`moses-mails/general-mails/{messageId}`) |
+| 3 | SES | Triggers the `mail-forwarder` Lambda |
+| 4 | Lambda | Retrieves the raw email from S3 |
+| 5 | Lambda | Parses headers (sender, recipients, subject) |
+| 6 | Lambda | Forwards to the admin inbox via SES |
 
----
+## Security Considerations
 
-## 🔒 Security Considerations
+### reCAPTCHA (bot protection)
 
-### reCAPTCHA (Bot Protection)
-- **Frontend**: reCAPTCHA v2 checkbox widget rendered via explicit API (`render=explicit`)
-- **Token transport**: Token included in POST payload as `recaptchaToken`
-- **Server-side verification**: Lambda calls `https://www.google.com/recaptcha/api/siteverify` with the secret key — this is the critical layer that actually blocks bots
-- **Token lifecycle**: One-time use, expires after ~2 minutes
-- **Post-verification**: Token is stripped from the body (`delete body.recaptchaToken`) before persistence or emailing
+| Item | Detail |
+|---|---|
+| Frontend | v2 checkbox widget rendered with the explicit API (`render=explicit`) |
+| Token transport | Sent in the POST payload as `recaptchaToken` |
+| Server-side check | Lambda calls Google's `siteverify` with the secret key; this is the layer that actually blocks bots |
+| Token lifecycle | One-time use; expires after about 2 minutes |
+| After verification | Token is removed from the body before storage or emailing |
 
-### CORS (Cross-Origin Resource Sharing)
-- **API Gateway OPTIONS method**: Returns `Access-Control-Allow-Origin: *`, `Access-Control-Allow-Methods: OPTIONS,POST`, `Access-Control-Allow-Headers: Content-Type,...`
-- **Lambda response headers**: All Lambda responses (including errors) include `Access-Control-Allow-Origin: *`
-- **Preflight handling**: API Gateway mock integration for OPTIONS, no Lambda invocation needed
+### CORS
 
-### Input Sanitization
-- **HTML escaping**: Lambda `escapeHtml()` function sanitizes all user input before injection into email HTML templates
-- **Email validation**: Required field check for email; HTML5 `type="email"` on frontend
-- **Token stripping**: `recaptchaToken` removed from body before DynamoDB persistence and admin email
+- **API Gateway OPTIONS:** returns `Access-Control-Allow-Origin: *`, `Access-Control-Allow-Methods: OPTIONS,POST` and `Access-Control-Allow-Headers: Content-Type,...`.
+- **Lambda responses:** every response, including errors, carries `Access-Control-Allow-Origin: *`.
+- **Preflight:** handled by the API Gateway mock integration; no Lambda invocation.
 
-### IAM (Least Privilege)
-- **Lambda execution role**: `AWSLambdaBasicExecutionRole` (CloudWatch Logs) + scoped policies for DynamoDB `PutItem` and SES `SendEmail`
-- **No wildcard resource access**: DynamoDB permission scoped to the specific table ARN
+### Input sanitization
 
----
+- **HTML escaping:** the Lambda `escapeHtml()` function sanitizes all user input before it enters email HTML templates.
+- **Email validation:** required-field check on the server and HTML5 `type="email"` on the frontend.
+- **Token removal:** `recaptchaToken` is removed before DynamoDB storage and admin email.
 
-## ⚙️ Environment Variables
+### IAM (least privilege)
+
+- **Execution role:** `AWSLambdaBasicExecutionRole` (CloudWatch Logs) plus scoped policies for DynamoDB `PutItem` and SES `SendEmail`.
+- **No wildcard resources:** the DynamoDB permission is scoped to the specific table ARN.
+
+## Environment Variables
 
 ### Lambda: xEngineer-commitFinalRegistration
 
-| Variable | Description | Example / Fallback |
-|----------|-------------|-------------------|
-| `RECAPTCHA_SECRET_KEY` | Google reCAPTCHA secret key for server-side verification | *(no fallback — must be set)* |
-| `TABLE_NAME` | DynamoDB table name for lead storage | `LeadsAndApplications` |
-| `VERIFIED_SOURCE_EMAIL` | SES verified sender email address | `mmcldint@mail.moses20608.click` |
+| Variable | Description | Example / fallback |
+|---|---|---|
+| `RECAPTCHA_SECRET_KEY` | Google reCAPTCHA secret key for server-side verification | None; must be set |
+| `TABLE_NAME` | DynamoDB table for lead storage | `LeadsAndApplications` |
+| `VERIFIED_SOURCE_EMAIL` | SES verified sender address | `mmcldint@mail.moses20608.click` |
 | `SENDER_DISPLAY_NAME` | Display name in the From header | `MM Digital Engagement` |
-| `ADMIN_INBOX` | Email address for admin notifications | `riadraz@gmail.com` |
+| `ADMIN_INBOX` | Address for admin notifications | `riadraz@gmail.com` |
 
-### Frontend (Hardcoded in HTML/JS)
+### Frontend (hardcoded in HTML/JS)
 
 | Value | Location | Notes |
-|-------|----------|-------|
-| reCAPTCHA site key | `index.html` `<head>` inline script | Public — safe to expose |
-| API Gateway URL | `js/script.js` `LAMBDA_URL` constant | Public — visible in browser network tab |
-| reCAPTCHA secret key | `.env` (local only, gitignored) | Never deployed to frontend |
+|---|---|---|
+| reCAPTCHA site key | `index.html`, inline script in `<head>` | Public; safe to expose |
+| API Gateway URL | `js/script.js`, `LAMBDA_URL` constant | Public; visible in the browser network tab |
+| reCAPTCHA secret key | `.env` (local only, gitignored) | Never deployed to the frontend |
 
----
-
-## 🚀 Deployment Guide
+## Deployment Guide
 
 ### Frontend (GitHub Pages)
-The frontend deploys automatically via GitHub Actions on push to the main branch (see `.github/workflows/deploy.yml`). No environment variables are needed on GitHub Pages — all values are hardcoded in the source.
 
-### Lambda Code (AWS Console)
-1. Open the Lambda in AWS Console
-2. Navigate to **Code** → edit the `index` file
-3. Paste the updated handler code
-4. Click **Deploy**
+- Deploys automatically through GitHub Actions on push to the main branch (`.github/workflows/deploy.yml`).
+- No environment variables are needed on GitHub Pages; all values are in the source.
 
-### Lambda Configuration
-Update timeout, memory, and environment variables via CLI:
-```bash
-# Set environment variable
-aws lambda update-function-configuration \
-  --function-name xEngineer-commitFinalRegistration \
-  --region us-east-1 \
-  --environment "Variables={RECAPTCHA_SECRET_KEY=your_secret_key}"
+### Lambda code (AWS Console)
 
-# Update timeout and memory
-aws lambda update-function-configuration \
-  --function-name xEngineer-commitFinalRegistration \
-  --region us-east-1 \
-  --timeout 15 \
-  --memory-size 256
-```
+1. Open the Lambda function in the AWS Console.
+2. Go to **Code** and edit the `index` file.
+3. Paste the updated handler code.
+4. Click **Deploy**.
+
+### Lambda configuration (AWS CLI)
+
+All settings use `aws lambda update-function-configuration` with `--function-name xEngineer-commitFinalRegistration` and `--region us-east-1`.
+
+| Setting | Option | Example value |
+|---|---|---|
+| Environment variable | `--environment` | `"Variables={RECAPTCHA_SECRET_KEY=your_secret_key}"` |
+| Timeout | `--timeout` | `15` |
+| Memory | `--memory-size` | `256` |
 
 ### Infrastructure (CloudFormation)
-Deploy the full infrastructure stack using the CloudFormation template in `docs/x-engineer-cloudformation.yaml`:
-```bash
-aws cloudformation deploy \
-  --template-file docs/x-engineer-cloudformation.yaml \
-  --stack-name x-engineer-pipeline \
-  --capabilities CAPABILITY_NAMED_IAM \
-  --parameter-overrides \
-      RecaptchaSecretKey=your_secret_key \
-      VerifiedSourceEmail=mmcldint@mail.moses20608.click \
-      AdminInbox=riadraz@gmail.com
-```
 
-> **Note**: CloudFormation provisions the infrastructure. Lambda handler code must be deployed separately via the AWS Console or `aws lambda update-function-code`.
+Deploy the full stack with `aws cloudformation deploy` and the template `docs/x-engineer-cloudformation.yaml`.
 
----
+| Option | Value |
+|---|---|
+| `--stack-name` | `x-engineer-pipeline` |
+| `--capabilities` | `CAPABILITY_NAMED_IAM` |
+| `--parameter-overrides` | `RecaptchaSecretKey`, `VerifiedSourceEmail`, `AdminInbox` |
 
-## 📁 Project Structure
+- **Note:** CloudFormation provisions the infrastructure only. Deploy the Lambda handler code separately through the AWS Console or `aws lambda update-function-code`.
 
-```
-x-engineer/
-├── index.html              # Main page (bilingual JA/EN)
-├── css/
-│   ├── style.css           # Core styles
-│   └── custom-style.css    # Custom overrides
-├── js/
-│   ├── script.js           # Form logic, language switcher, doc hub, reCAPTCHA
-│   └── app.js              # Tailwind config, markdown helpers
-├── docs/
-│   ├── manifest.json        # Documentation hub tab configuration
-│   ├── aws-iot-ggv2-202608-en.md
-│   ├── aws-iot-ggv2-202608-ja.md
-│   ├── x-engineer-architecture-en.md   # ← This document
-│   ├── x-engineer-architecture-ja.md    # ← Japanese version
-│   └── x-engineer-cloudformation.yaml  # ← IaC template
-├── aws-backend/
-│   ├── xEngineer-commitFinalRegistration  # Lambda handler (registration)
-│   └── mail-forwarder                     # Lambda handler (email forwarding)
-├── .github/workflows/
-│   └── deploy.yml           # GitHub Pages deployment
-├── .env                    # Local secrets (gitignored)
-├── .gitignore
-├── CNAME                   # GitHub Pages custom domain
-└── package.json
-```
+## Project Structure
 
----
+| Path | Description |
+|---|---|
+| `index.html` | Main page (bilingual JA/EN) |
+| `css/style.css` | Core styles |
+| `css/custom-style.css` | Custom overrides |
+| `js/script.js` | Form logic, language switcher, documentation hub, reCAPTCHA |
+| `js/app.js` | Tailwind config, markdown helpers |
+| `docs/manifest.json` | Documentation hub tab configuration |
+| `docs/aws-iot-ggv2-202608-en.md` / `-ja.md` | AWS IoT Greengrass documents |
+| `docs/x-engineer-architecture-en.md` / `-ja.md` | This document and its Japanese version |
+| `docs/x-engineer-cloudformation.yaml` | IaC template |
+| `aws-backend/xEngineer-commitFinalRegistration` | Lambda handler (registration) |
+| `aws-backend/mail-forwarder` | Lambda handler (email forwarding) |
+| `.github/workflows/deploy.yml` | GitHub Pages deployment |
+| `.env` | Local secrets (gitignored) |
+| `CNAME` | GitHub Pages custom domain |
+| `package.json` | Project metadata |
+
 **Tags:** #AWS #Lambda #APIGateway #DynamoDB #SES #Serverless #reCAPTCHA #CloudFormation #GitHubPages
